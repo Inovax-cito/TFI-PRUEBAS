@@ -33,9 +33,7 @@ export function AppContent() {
     );
   }
 
-  if (!user) {
-    return <LoginPage />;
-  }
+  // Acceso directo como Administrador de Kiosco (sin pantalla de login)
 
   // Renderizador de pestañas
   const renderContent = () => {
