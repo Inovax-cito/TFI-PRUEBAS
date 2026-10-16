@@ -49,3 +49,10 @@ export const requireAdmin = (req, res, next) => {
   }
   next();
 };
+
+export const requireStaff = (req, res, next) => {
+  if (!req.user || !['ADMINISTRADOR', 'EMPLEADO'].includes(req.user.role)) {
+    return res.status(403).json({ message: 'Esta función está disponible para el personal del comercio.' });
+  }
+  next();
+};

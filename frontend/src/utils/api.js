@@ -7,14 +7,8 @@ const getApiBase = () => {
 
 const API_BASE = getApiBase();
 
-const DEFAULT_ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJBRE1JTklTVFJBRE9SIiwiaWF0IjoxNzkxMjA1NzI5LCJleHAiOjE4MjI3NDE3Mjl9.yg6gwra9-w6VoWaZkDZfIhqIuIBUawmPBknIxXJWZJw';
-
 export const apiRequest = async (endpoint, options = {}) => {
-  let token = localStorage.getItem('token');
-  if (!token) {
-    token = DEFAULT_ADMIN_TOKEN;
-    localStorage.setItem('token', token);
-  }
+  const token = localStorage.getItem('token');
 
   const headers = {
     'Content-Type': 'application/json',
@@ -33,11 +27,11 @@ export const apiRequest = async (endpoint, options = {}) => {
 
   const response = await fetch(`${API_BASE}${endpoint}`, config);
 
-  if (response.status === 401 && endpoint !== '/auth/login') {
-    console.warn('Advertencia de autorización en', endpoint, '- Continuando en modo Admin.');
-  }
-
   const data = await response.json().catch(() => ({}));
+
+  if (endpoint !== '/auth/login' && (response.status === 401 || (response.status === 403 && /token inválido|token invalido|expirado/i.test(data.message || '')))) {
+    window.dispatchEvent(new Event('auth:expired'));
+  }
 
   if (!response.ok) {
     const errorMsg = data.message || `Error en la solicitud (${response.status})`;

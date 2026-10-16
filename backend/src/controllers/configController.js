@@ -7,7 +7,7 @@ export const getConfig = async (req, res) => {
     if (!config) {
       config = await prisma.businessConfig.create({
         data: {
-          businessName: 'Sistema de Autogestión Administrativo',
+          businessName: 'Emprende',
           cuit: '20-00000000-0',
           address: 'Av. Comercial 1000',
           phone: '+54 11 0000-0000',
@@ -45,7 +45,7 @@ export const updateConfig = async (req, res) => {
     if (!config) {
       config = await prisma.businessConfig.create({
         data: {
-          businessName: businessName || 'Sistema de Autogestión',
+          businessName: businessName || 'Emprende',
           cuit,
           address,
           phone,

@@ -6,11 +6,13 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
+    "dev:marketplace-demo": "node src/dev/marketplaceDemoServer.js",
     "start": "node src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
-    "prisma:seed": "node src/seed/seed.js"
+    "prisma:seed": "node src/seed/seed.js",
+    "prisma:seed:marketplace-demo": "node src/seed/marketplaceDemoSeed.js"
   },
   "keywords": [
     "pos",

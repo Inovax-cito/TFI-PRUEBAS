@@ -5,7 +5,7 @@ import { NotificationDropdown } from './NotificationDropdown.jsx';
 import { ProfileModal } from './ProfileModal.jsx';
 
 export const Navbar = ({ activeTab, setMobileOpen }) => {
-  const { user, isAdmin, businessConfig, unreadNotifications, fetchUnreadCount, logout } = useAuth();
+  const { user, isAdmin, unreadNotifications, fetchUnreadCount, logout } = useAuth();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -25,6 +25,12 @@ export const Navbar = ({ activeTab, setMobileOpen }) => {
 
   const getPageTitle = (tab) => {
     switch (tab) {
+      case 'analyses': return 'Análisis del negocio';
+      case 'portal': return 'Emprende';
+      case 'business': return 'Mi negocio';
+      case 'events': return 'Ferias y eventos';
+      case 'applications': return 'Mis solicitudes';
+      case 'market-admin': return 'Administración de eventos';
       case 'dashboard': return 'Panel Principal';
       case 'sales': return 'Punto de Venta & Operaciones';
       case 'products': return 'Catálogo de Productos';
@@ -35,7 +41,7 @@ export const Navbar = ({ activeTab, setMobileOpen }) => {
       case 'reports': return 'Reportes & Estadísticas';
       case 'users': return 'Gestión de Usuarios';
       case 'config': return 'Configuración del Sistema';
-      default: return 'Sistema de Autogestión';
+      default: return 'Emprende';
     }
   };
 
@@ -54,12 +60,7 @@ export const Navbar = ({ activeTab, setMobileOpen }) => {
 
           <div className="navbar-store-info">
             <Store size={16} className="text-primary" />
-            <span>{businessConfig?.businessName || 'Comercio'}</span>
-            {businessConfig?.cuit && (
-              <span className="text-muted" style={{ fontSize: '0.78rem', marginLeft: '4px' }}>
-                (CUIT: {businessConfig.cuit})
-              </span>
-            )}
+            <span>Emprende · Tucumán</span>
           </div>
         </div>
 

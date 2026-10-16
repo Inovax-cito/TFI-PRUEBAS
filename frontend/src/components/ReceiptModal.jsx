@@ -94,7 +94,7 @@ export const ReceiptModal = ({ isOpen, onClose, sale, businessConfig }) => {
             <div className="ticket-footer">
               <p>{config.receiptFooter || '¡Muchas gracias por su compra!'}</p>
               <p style={{ marginTop: '4px', fontSize: '0.68rem', color: '#94a3b8' }}>
-                Sistema de Autogestión Administrativo
+                Emprende
               </p>
             </div>
           </div>

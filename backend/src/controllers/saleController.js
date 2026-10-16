@@ -113,7 +113,7 @@ export const getSaleById = async (req, res) => {
 
 export const createSale = async (req, res) => {
   try {
-    const { items, paymentMethod, discount = 0 } = req.body;
+    const { items, paymentMethod, discount = 0, eventId } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'La venta debe contener al menos un producto.' });
@@ -121,6 +121,25 @@ export const createSale = async (req, res) => {
 
     if (!paymentMethod) {
       return res.status(400).json({ message: 'El método de pago es requerido.' });
+    }
+
+    let eventLink = {};
+    if (req.user.role === 'EMPRENDEDOR' && (eventId === undefined || eventId === null || eventId === '')) {
+      return res.status(403).json({ message: 'Las cuentas emprendedoras solo pueden registrar ventas dentro de una participación aprobada.' });
+    }
+    if (eventId !== undefined && eventId !== null && eventId !== '') {
+      const parsedEventId = Number(eventId);
+      const business = await prisma.businessProfile.findUnique({ where: { ownerUserId: req.user.id } });
+      if (!Number.isInteger(parsedEventId) || !business) {
+        return res.status(400).json({ message: 'Completá el perfil de tu negocio antes de registrar actividad de un evento.' });
+      }
+      const approvedApplication = await prisma.eventApplication.findFirst({
+        where: { eventId: parsedEventId, businessId: business.id, applicantUserId: req.user.id, status: 'APROBADA' },
+      });
+      if (!approvedApplication) {
+        return res.status(403).json({ message: 'Solo un negocio aprobado puede registrar ventas para este evento.' });
+      }
+      eventLink = { eventId: parsedEventId, businessId: business.id };
     }
 
     const config = await prisma.businessConfig.findFirst();
@@ -200,6 +219,7 @@ export const createSale = async (req, res) => {
           paymentMethod,
           status: 'COMPLETADA',
           userId: req.user.id,
+          ...eventLink,
         },
       });
 
@@ -251,20 +271,21 @@ export const createSale = async (req, res) => {
 
       // 4. Si es Efectivo y la caja está abierta, registrar movimiento de caja
       if (paymentMethod === 'Efectivo') {
-        const openCashRegister = await tx.cashRegister.findFirst({
+        const openCashRegister = eventLink.eventId ? null : await tx.cashRegister.findFirst({
           where: { status: 'ABIERTA' },
           orderBy: { openedAt: 'desc' },
         });
 
-        if (openCashRegister) {
+        if (openCashRegister || eventLink.eventId) {
           await tx.cashMovement.create({
             data: {
-              cashRegisterId: openCashRegister.id,
+              cashRegisterId: openCashRegister?.id || null,
               type: 'INGRESO',
               category: 'VENTA',
               amount: totalAmount,
               concept: `Cobro de Venta N° ${saleNumber} en Efectivo`,
               userId: req.user.id,
+              ...eventLink,
             },
           });
         }
@@ -353,20 +374,21 @@ export const cancelSale = async (req, res) => {
 
       // 3. Revertir dinero si se cobró en efectivo y hay caja abierta
       if (sale.paymentMethod === 'Efectivo') {
-        const openRegister = await tx.cashRegister.findFirst({
+        const openRegister = sale.eventId ? null : await tx.cashRegister.findFirst({
           where: { status: 'ABIERTA' },
           orderBy: { openedAt: 'desc' },
         });
 
-        if (openRegister) {
+        if (openRegister || sale.eventId) {
           await tx.cashMovement.create({
             data: {
-              cashRegisterId: openRegister.id,
+              cashRegisterId: openRegister?.id || null,
               type: 'EGRESO',
-              category: 'CANCELACION_VENTA',
+              category: sale.eventId ? 'CANCELACION_VENTA_EVENTO' : 'CANCELACION_VENTA',
               amount: sale.total,
               concept: `Reintegro por Cancelación de Venta N° ${sale.saleNumber}`,
               userId: req.user.id,
+              ...(sale.eventId ? { eventId: sale.eventId, businessId: sale.businessId } : {}),
             },
           });
         }

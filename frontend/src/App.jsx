@@ -14,11 +14,12 @@ import { CashPage } from './pages/CashPage.jsx';
 import { ReportsPage } from './pages/ReportsPage.jsx';
 import { UsersPage } from './pages/UsersPage.jsx';
 import { ConfigPage } from './pages/ConfigPage.jsx';
+import { EntrepreneurPortal, MarketplacePage } from './pages/MarketplacePage.jsx';
 
 export function AppContent() {
   const { user, loading, isAdmin } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('portal');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -27,10 +28,17 @@ export function AppContent() {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0f172a', color: '#ffffff', gap: '16px' }}>
         <div className="spinner-primary" style={{ width: '40px', height: '40px', borderWidth: '4px' }} />
         <span style={{ fontSize: '1rem', fontWeight: 600, color: '#94a3b8' }}>
-          Iniciando Sistema de Autogestión Administrativo...
+          Iniciando Emprende…
         </span>
       </div>
     );
+  }
+
+  if (!user) return <LoginPage />;
+
+  const marketplaceSections = { portal: 'home', business: 'business', events: 'events', applications: 'applications', 'market-admin': 'admin' };
+  if (user.role === 'EMPRENDEDOR' || marketplaceSections[activeTab]) {
+    return <EntrepreneurPortal initialSection={marketplaceSections[activeTab] || 'home'} onOpenBackoffice={() => setActiveTab('dashboard')} />;
   }
 
   // Acceso directo como Administrador de Kiosco (sin pantalla de login)
@@ -38,6 +46,16 @@ export function AppContent() {
   // Renderizador de pestañas
   const renderContent = () => {
     switch (activeTab) {
+      case 'portal':
+        return <MarketplacePage initialTab="home" onNavigate={setActiveTab} />;
+      case 'business':
+        return <MarketplacePage initialTab="business" onNavigate={setActiveTab} />;
+      case 'events':
+        return <MarketplacePage initialTab="events" onNavigate={setActiveTab} />;
+      case 'applications':
+        return <MarketplacePage initialTab="applications" onNavigate={setActiveTab} />;
+      case 'market-admin':
+        return <MarketplacePage initialTab="admin" onNavigate={setActiveTab} />;
       case 'dashboard':
         return <DashboardPage setActiveTab={setActiveTab} />;
       case 'sales':

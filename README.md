@@ -1,4 +1,4 @@
-# Sistema de Autogestión Administrativo
+# Emprende
 
 **Trabajo Final Integrador (TFI) / Proyecto de Autogestión Comercial**  
 **Autores:** Pérez Joaquín, Risso Aaron  
@@ -8,7 +8,9 @@
 
 ## 📋 Descripción del Proyecto
 
-El **Sistema de Autogestión Administrativo** es una solución integral y moderna diseñada específicamente para microemprendedores y pequeños comercios (almacenes, kioscos, autoservicios, tiendas de barrio). Permite centralizar en una única plataforma web todas las áreas clave del negocio:
+**Emprende** es un portal para emprendimientos de Banda del Río Salí, Cruz Alta y Alderetes. Permite consultar convocatorias locales, filtrar por localidad y fecha, postular a ferias y seguir el estado de las solicitudes. El perfil del negocio se guarda una vez y se reutiliza en cada postulación.
+
+La aplicación conserva módulos comerciales anteriores para productos, ventas, inventario, compras y caja. La gestión de eventos registra su actividad separada de los movimientos habituales. El catálogo y el stock heredados todavía son compartidos y no están aislados por emprendimiento.
 
 1. **Punto de Venta (POS) Ágil:** Proceso de cobro optimizado para concretarse en menos de 45 segundos, con buscador en vivo, códigos de barra/SKU, cálculo de descuentos, métodos de pago, calculadora de vuelto en efectivo y emisión de comprobantes internos imprimibles (ticket térmico).
 2. **Catálogo de Productos:** Control integral de artículos, códigos SKU, categorías, márgenes de ganancia, unidades de medida, historial de variaciones de precio y baja lógica.

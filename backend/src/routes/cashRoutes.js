@@ -6,15 +6,15 @@ import {
   createManualMovement,
   getCashHistory,
 } from '../controllers/cashController.js';
-import { authenticateToken, requireAdmin } from '../middlewares/auth.js';
+import { authenticateToken, requireAdmin, requireStaff } from '../middlewares/auth.js';
 
 const router = Router();
 
 router.use(authenticateToken);
 
-router.get('/current', getCurrentRegister);
-router.post('/open', openRegister);
-router.post('/close', closeRegister);
+router.get('/current', requireStaff, getCurrentRegister);
+router.post('/open', requireStaff, openRegister);
+router.post('/close', requireStaff, closeRegister);
 router.post('/movements', createManualMovement);
 router.get('/history', requireAdmin, getCashHistory);
 

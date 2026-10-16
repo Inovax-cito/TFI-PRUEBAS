@@ -13,6 +13,7 @@ export const getDashboardMetrics = async (req, res) => {
       where: {
         createdAt: { gte: todayStart, lte: todayEnd },
         status: 'COMPLETADA',
+        eventId: null,
       },
       include: {
         details: true,
@@ -34,6 +35,7 @@ export const getDashboardMetrics = async (req, res) => {
     const todayMovements = await prisma.cashMovement.findMany({
       where: {
         createdAt: { gte: todayStart, lte: todayEnd },
+        eventId: null,
       },
     });
 
@@ -105,6 +107,7 @@ export const getDashboardMetrics = async (req, res) => {
         where: {
           createdAt: { gte: dayStart, lte: dayEnd },
           status: 'COMPLETADA',
+          eventId: null,
         },
         select: { total: true },
       });
@@ -122,7 +125,7 @@ export const getDashboardMetrics = async (req, res) => {
 
     // 7. Gráfico: Top 5 productos más vendidos (todo el historial o últimos 30 días)
     const saleDetails = await prisma.saleDetail.findMany({
-      where: { sale: { status: 'COMPLETADA' } },
+      where: { sale: { status: 'COMPLETADA', eventId: null } },
       include: {
         product: { select: { id: true, name: true } },
       },
@@ -209,7 +212,7 @@ export const getSalesReport = async (req, res) => {
   try {
     const { startDate, endDate, paymentMethod } = req.query;
 
-    const where = { status: 'COMPLETADA' };
+    const where = { status: 'COMPLETADA', eventId: null };
 
     if (paymentMethod) {
       where.paymentMethod = paymentMethod;
@@ -295,6 +298,7 @@ export const getFinancialReport = async (req, res) => {
     const sales = await prisma.sale.findMany({
       where: {
         status: 'COMPLETADA',
+        eventId: null,
         ...(Object.keys(dateFilter).length > 0 && { createdAt: dateFilter }),
       },
       include: { details: true },
@@ -313,6 +317,7 @@ export const getFinancialReport = async (req, res) => {
     // 2. Gastos y egresos de caja (distintos a egresos por compra de mercadería ya inventariada)
     const cashMovements = await prisma.cashMovement.findMany({
       where: {
+        eventId: null,
         ...(Object.keys(dateFilter).length > 0 && { createdAt: dateFilter }),
       },
     });

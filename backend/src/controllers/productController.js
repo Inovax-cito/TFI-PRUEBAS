@@ -39,7 +39,11 @@ export const getProducts = async (req, res) => {
       },
       orderBy,
     });
-
+    if (req.user.role === 'EMPRENDEDOR') {
+      return res.json(products.map(({ id, name, sku, salePrice, currentStock, unit, active, category }) => ({
+        id, name, sku, salePrice, currentStock, unit, active, category,
+      })));
+    }
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener productos.', error: error.message });
@@ -74,6 +78,14 @@ export const getProductById = async (req, res) => {
 
     if (!product) {
       return res.status(404).json({ message: 'Producto no encontrado.' });
+    }
+
+    if (req.user.role === 'EMPRENDEDOR') {
+      return res.json({
+        id: product.id, name: product.name, sku: product.sku, salePrice: product.salePrice,
+        currentStock: product.currentStock, unit: product.unit, active: product.active,
+        category: { id: product.category.id, name: product.category.name },
+      });
     }
 
     res.json(product);

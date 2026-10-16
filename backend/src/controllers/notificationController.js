@@ -3,12 +3,13 @@ import prisma from '../config/db.js';
 export const getNotifications = async (req, res) => {
   try {
     const notifications = await prisma.notification.findMany({
+      where: { OR: [{ userId: req.user.id }, { userId: null }] },
       orderBy: { createdAt: 'desc' },
       take: 20,
     });
 
     const unreadCount = await prisma.notification.count({
-      where: { read: false },
+      where: { read: false, OR: [{ userId: req.user.id }, { userId: null }] },
     });
 
     res.json({ notifications, unreadCount });
@@ -22,10 +23,11 @@ export const markAsRead = async (req, res) => {
     const { id } = req.params;
     const notifId = parseInt(id, 10);
 
-    const updated = await prisma.notification.update({
-      where: { id: notifId },
+    const updated = await prisma.notification.updateMany({
+      where: { id: notifId, OR: [{ userId: req.user.id }, { userId: null }] },
       data: { read: true },
     });
+    if (!updated.count) return res.status(404).json({ message: 'Notificación no encontrada.' });
 
     res.json({ message: 'Notificación marcada como leída.', notification: updated });
   } catch (error) {
@@ -36,7 +38,7 @@ export const markAsRead = async (req, res) => {
 export const markAllAsRead = async (req, res) => {
   try {
     await prisma.notification.updateMany({
-      where: { read: false },
+      where: { read: false, OR: [{ userId: req.user.id }, { userId: null }] },
       data: { read: true },
     });
 

@@ -1,0 +1,346 @@
+.emprende-portal-shell {
+  --emprende-navy: #132344;
+  --emprende-text: #253654;
+  --emprende-muted: #64748b;
+  --emprende-line: #dfe5eb;
+  --emprende-surface: #fff;
+  --emprende-bg: #f7f9fb;
+  --emprende-teal: #008c91;
+  --emprende-teal-dark: #06777c;
+  --emprende-teal-pale: #e9f6f5;
+  min-height: 100vh;
+  background: var(--emprende-bg);
+  color: var(--emprende-text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.emprende-login { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.emprende-login .btn.btn-primary { border-color: #008c91; background: #008c91; }
+.emprende-login .btn.btn-primary:hover { background: #06777c; }
+.emprende-login .form-input:focus { border-color: #66b7b9; box-shadow: 0 0 0 3px rgba(0, 140, 145, .1); }
+
+.emprende-header {
+  position: sticky;
+  z-index: 900;
+  top: 0;
+  border-bottom: 1px solid var(--emprende-line);
+  background: rgba(255, 255, 255, .97);
+  box-shadow: 0 1px 3px rgba(19, 35, 68, .035);
+  backdrop-filter: blur(12px);
+}
+.emprende-header-inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 3vw, 46px);
+  width: min(100% - 56px, 1440px);
+  min-height: 82px;
+  margin: 0 auto;
+}
+.emprende-brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 260px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--emprende-navy);
+  text-align: left;
+  cursor: pointer;
+}
+.emprende-brand-mark {
+  position: relative;
+  display: block;
+  width: 38px;
+  height: 38px;
+}
+.emprende-brand-mark span { position: absolute; display: block; width: 23px; height: 23px; border-radius: 7px 7px 7px 2px; transform: skewY(-26deg); }
+.emprende-brand-mark span:first-child { top: 1px; right: 1px; background: var(--emprende-navy); }
+.emprende-brand-mark span:last-child { bottom: 1px; left: 1px; background: var(--emprende-teal); }
+.emprende-brand-copy { display: flex; flex-direction: column; gap: 3px; }
+.emprende-brand-copy strong { color: var(--emprende-navy); font-size: 1.28rem; font-weight: 800; letter-spacing: -.045em; line-height: 1; }
+.emprende-brand-copy small { color: #8793a5; font-size: .59rem; font-weight: 700; letter-spacing: .075em; text-transform: uppercase; white-space: nowrap; }
+.emprende-nav { display: flex; align-self: stretch; align-items: stretch; gap: clamp(4px, 1vw, 20px); }
+.emprende-nav button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: max-content;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  color: #3d4a63;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: color .15s ease, background .15s ease;
+}
+.emprende-nav button:hover { color: var(--emprende-teal-dark); background: #f6fbfb; }
+.emprende-nav button.active { color: var(--emprende-navy); font-weight: 700; }
+.emprende-nav button.active::after { position: absolute; right: 6px; bottom: 0; left: 6px; height: 3px; border-radius: 3px 3px 0 0; background: var(--emprende-teal); content: ""; }
+.emprende-nav button svg { color: #33415d; }
+.emprende-nav button.active svg { color: var(--emprende-teal); }
+.emprende-header-actions { display: flex; flex: 1 0 auto; align-items: center; justify-content: flex-end; gap: 14px; margin-left: auto; padding-left: 18px; border-left: 1px solid var(--emprende-line); }
+.emprende-popover-anchor,.emprende-profile-anchor { position: relative; }
+.emprende-icon-button { position: relative; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; color: #35435d; cursor: pointer; }
+.emprende-icon-button:hover,.emprende-icon-button.active { background: #f0f6f6; color: var(--emprende-teal-dark); }
+.emprende-notification-count { position: absolute; top: 2px; right: 1px; display: grid; place-items: center; min-width: 17px; height: 17px; padding: 0 4px; border: 2px solid white; border-radius: 20px; background: #cf4d48; color: white; font-size: .6rem; font-weight: 750; }
+.emprende-profile-button { display: flex; align-items: center; gap: 9px; padding: 3px 4px; border: 0; background: none; color: var(--emprende-navy); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.emprende-avatar { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #e9edf3; color: #39445b; font-size: .78rem; font-weight: 750; }
+.emprende-profile-button > svg { color: #68768d; }
+.emprende-account-menu { position: absolute; z-index: 950; top: calc(100% + 11px); right: 0; display: flex; flex-direction: column; min-width: 220px; padding: 13px; border: 1px solid var(--emprende-line); border-radius: 10px; background: white; box-shadow: 0 14px 35px rgba(19, 35, 68, .15); }
+.emprende-account-menu > span { overflow: hidden; color: var(--emprende-navy); font-size: .78rem; font-weight: 700; text-overflow: ellipsis; }
+.emprende-account-menu > small { margin: 5px 0 10px; color: var(--emprende-muted); font-size: .69rem; }
+.emprende-account-menu > button { display: flex; align-items: center; gap: 8px; padding: 9px 7px; border: 0; border-top: 1px solid #edf0f3; background: white; color: #46536a; font: inherit; font-size: .76rem; text-align: left; cursor: pointer; }
+.emprende-account-menu > button:hover { color: #a33936; }
+.emprende-portal-main { min-height: calc(100vh - 82px); }
+.emprende-portal-shell .marketplace-page { width: min(100% - 56px, 1440px); max-width: none; margin: 0 auto; padding: 30px 0 56px; color: var(--emprende-text); }
+.emprende-portal-shell .market-kicker { color: #8190a6; font-family: inherit; font-size: .68rem; font-weight: 750; letter-spacing: .12em; }
+.emprende-portal-shell .market-page-heading { margin: 0 0 23px; }
+.emprende-portal-shell .market-page-heading h1 { margin-top: 8px; color: var(--emprende-navy); font-family: inherit; font-size: clamp(2rem, 3.1vw, 2.75rem); font-weight: 780; letter-spacing: -.045em; line-height: 1.08; }
+.emprende-portal-shell .market-page-heading p { max-width: 720px; margin-top: 9px; color: var(--emprende-muted); font-size: 1.03rem; line-height: 1.5; }
+.emprende-home-heading { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-bottom: 22px; }
+.emprende-home-heading .market-page-heading { margin: 0; }
+.emprende-home-cta { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: 7px; padding-top: 10px; }
+.emprende-home-cta small { padding-right: 7px; color: #78869c; font-size: .74rem; }
+.emprende-portal-shell .market-button { min-height: 42px; padding: 0 15px; border-radius: 7px; font-family: inherit; font-size: .78rem; font-weight: 700; transition: background .16s ease, border-color .16s ease, color .16s ease; }
+.emprende-portal-shell .market-button:focus-visible,.emprende-portal-shell .market-text-button:focus-visible,.emprende-portal-shell .market-nav button:focus-visible { outline: 3px solid rgba(0, 140, 145, .28); outline-offset: 2px; }
+.emprende-portal-shell .market-button.primary { background: var(--emprende-teal); box-shadow: none; }
+.emprende-portal-shell .market-button.primary:hover:not(:disabled) { background: var(--emprende-teal-dark); transform: none; }
+.emprende-portal-shell .market-button.outline { border-color: var(--emprende-teal); background: white; color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-button.outline:hover:not(:disabled) { background: var(--emprende-teal-pale); }
+.emprende-portal-shell .market-text-button,.emprende-portal-shell .market-side-link { color: var(--emprende-teal-dark); font-family: inherit; }
+.emprende-portal-shell .market-text-button:hover,.emprende-portal-shell .market-side-link:hover { color: #045f65; }
+.emprende-portal-shell .market-filters { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; margin: 0 0 20px; padding: 0; }
+.emprende-portal-shell .market-filter-field { display: flex; flex: 1 1 180px; align-items: center; gap: 11px; min-width: 160px; min-height: 60px; padding: 8px 13px; border: 1px solid var(--emprende-line); border-radius: 8px; background: white; color: #3a4964; box-shadow: 0 1px 2px rgba(19, 35, 68, .025); }
+.emprende-portal-shell .market-filter-field > svg { flex: 0 0 auto; color: #31415e; }
+.emprende-portal-shell .market-filter-label { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.emprende-portal-shell .market-filter-label small { color: #8392a9; font-size: .68rem; font-weight: 550; }
+.emprende-portal-shell .market-filter-label select,.emprende-portal-shell .market-filter-label input { width: 100%; min-width: 0; padding: 0; border: 0; outline: 0; background: transparent; color: var(--emprende-navy); font: inherit; font-size: .83rem; font-weight: 600; }
+.emprende-portal-shell .market-filter-label input[type="date"] { min-height: 19px; }
+.emprende-portal-shell .market-filter-label input::placeholder { color: #596881; }
+.emprende-portal-shell .market-filter-field:focus-within { border-color: #6abbbd; box-shadow: 0 0 0 3px rgba(0, 140, 145, .1); }
+.emprende-portal-shell .market-filter-field.category { flex-basis: 175px; }
+.emprende-portal-shell .market-clear-filters { display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; border: 0; background: none; color: #5b6b83; font: inherit; font-size: .73rem; cursor: pointer; }
+.emprende-portal-shell .market-view-toggle { display: flex; align-items: center; gap: 2px; margin-left: auto; padding: 4px; border: 1px solid var(--emprende-line); border-radius: 8px; background: white; }
+.emprende-portal-shell .market-view-toggle button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 82px; min-height: 36px; padding: 0 9px; border: 0; border-radius: 6px; background: transparent; color: #52617a; font: inherit; font-size: .76rem; font-weight: 650; cursor: pointer; }
+.emprende-portal-shell .market-view-toggle button.active { background: var(--emprende-teal-pale); color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-home-layout { display: grid; grid-template-columns: minmax(0, 1fr) 355px; align-items: start; gap: 20px; }
+.emprende-portal-shell .market-home-main { min-width: 0; }
+.emprende-portal-shell .market-home-opportunities { padding: 20px; border: 1px solid var(--emprende-line); border-radius: 9px; background: white; box-shadow: 0 1px 2px rgba(19, 35, 68, .025); }
+.emprende-portal-shell .market-home-section-head { align-items: center; margin-bottom: 16px; }
+.emprende-portal-shell .market-home-section-head h2 { margin-top: 5px; color: var(--emprende-navy); font-size: 1.06rem; font-weight: 730; }
+.emprende-portal-shell .market-home-explore { grid-template-columns: minmax(0, 1fr); gap: 15px; }
+.emprende-portal-shell .market-home-explore.map-focus { grid-template-columns: minmax(0, .95fr) minmax(320px, 1.05fr); }
+.emprende-portal-shell .market-event-list { min-width: 0; }
+.emprende-portal-shell .market-explore-layout:not(.map-focus) .market-map-column { display: none; }
+.emprende-portal-shell .market-explore-layout.map-focus .market-map-column { display: block; }
+.emprende-portal-shell .market-list-count { margin: 0 0 10px; color: #6a7890; font-size: .74rem; }
+.emprende-portal-shell .market-list-count strong { color: var(--emprende-navy); }
+.emprende-portal-shell .market-event-card { overflow: hidden; margin-bottom: 12px; border: 1px solid var(--emprende-line); border-radius: 9px; background: white; box-shadow: 0 1px 3px rgba(19, 35, 68, .035); transition: border-color .16s ease, box-shadow .16s ease; }
+.emprende-portal-shell .market-event-card:hover,.emprende-portal-shell .market-event-card.selected { border-color: #86c9ca; box-shadow: 0 3px 12px rgba(0, 118, 124, .09); }
+.emprende-portal-shell .market-event-card-row { display: grid; grid-template-columns: minmax(150px, 34%) minmax(0, 1fr); min-height: 190px; }
+.emprende-portal-shell .market-event-visual { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; min-height: 190px; border: 0; background: linear-gradient(135deg, #eef4f6 0%, #e6eff1 100%); color: #73869a; cursor: pointer; }
+.emprende-portal-shell .market-event-visual-mark { display: grid; place-items: center; width: 68px; height: 68px; border: 1px solid #d6e2e5; border-radius: 50%; background: rgba(255,255,255,.76); color: #4d8590; }
+.emprende-portal-shell .market-event-visual > span:last-child { color: #7a8c9d; font-size: .58rem; font-weight: 750; letter-spacing: .12em; }
+.emprende-portal-shell .market-event-card-main { display: flex; flex-direction: column; align-items: stretch; min-width: 0; padding: 17px 18px 10px; border: 0; background: white; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.emprende-portal-shell .market-event-card-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 7px; }
+.emprende-portal-shell .market-event-locality { display: inline-flex; align-items: center; gap: 5px; color: #566780; font-size: .72rem; }
+.emprende-portal-shell .market-event-locality svg { color: var(--emprende-navy); }
+.emprende-portal-shell .market-status { display: inline-flex; align-items: center; gap: 5px; min-height: 25px; padding: 3px 9px; border: 0; border-radius: 20px; background: #e6f5f2; color: #087667; font-size: .66rem; font-weight: 750; }
+.emprende-portal-shell .market-status::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+.emprende-portal-shell .status-cerrada,.emprende-portal-shell .status-sin_cupos { background: #f1f3f5; color: #67758a; }
+.emprende-portal-shell .status-borrador { background: #f3f0e9; color: #816e42; }
+.emprende-portal-shell .status-enviada,.emprende-portal-shell .status-en_revision { background: #eef3fb; color: #486490; }
+.emprende-portal-shell .status-aprobada { background: #e8f5ed; color: #25734a; }
+.emprende-portal-shell .status-no_seleccionada,.emprende-portal-shell .status-cancelada { background: #f9edeb; color: #a34d45; }
+.emprende-portal-shell .market-event-card-main h3 { margin: 9px 0 6px; color: var(--emprende-navy); font-family: inherit; font-size: 1.03rem; font-weight: 730; letter-spacing: -.015em; line-height: 1.28; }
+.emprende-portal-shell .market-event-card-main > p { display: -webkit-box; overflow: hidden; margin: 0; color: #68778e; font-size: .75rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.emprende-portal-shell .market-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.emprende-portal-shell .market-tags span { padding: 3px 7px; border: 1px solid #e5eaf0; border-radius: 20px; background: #fafbfc; color: #65748a; font-size: .62rem; }
+.emprende-portal-shell .market-event-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 15px 12px; border-top: 1px solid #edf0f3; }
+.emprende-portal-shell .market-event-card-facts { display: flex; flex: 1; flex-wrap: wrap; gap: 13px 20px; min-width: 0; }
+.emprende-portal-shell .market-event-card-facts > span { display: flex; align-items: flex-start; gap: 7px; min-width: 0; color: var(--emprende-navy); }
+.emprende-portal-shell .market-event-card-facts > span > svg { flex: 0 0 auto; margin-top: 2px; }
+.emprende-portal-shell .market-event-card-facts > span > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.emprende-portal-shell .market-event-card-facts strong { color: var(--emprende-navy); font-size: .68rem; font-weight: 650; }
+.emprende-portal-shell .market-event-card-facts small { overflow: hidden; color: #78869a; font-size: .63rem; text-overflow: ellipsis; white-space: nowrap; }
+.emprende-portal-shell .market-event-card-bottom .market-button { flex: 0 0 auto; min-height: 35px; padding: 0 10px; font-size: .69rem; }
+.emprende-portal-shell .market-more-events { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 40px; border: 1px solid #b5d7d8; border-radius: 7px; background: white; color: var(--emprende-teal-dark); font: inherit; font-size: .75rem; font-weight: 700; cursor: pointer; }
+.emprende-portal-shell .market-more-events:hover { background: var(--emprende-teal-pale); }
+.emprende-portal-shell .market-home-side { display: flex; flex-direction: column; gap: 17px; padding: 0; border: 0; background: transparent; }
+.emprende-portal-shell .market-business-summary,.emprende-portal-shell .market-notice-panel { padding: 18px; border: 1px solid var(--emprende-line); border-radius: 9px; background: white; box-shadow: 0 1px 2px rgba(19, 35, 68, .025); }
+.emprende-portal-shell .market-side-heading { display: flex; align-items: center; gap: 10px; }
+.emprende-portal-shell .market-side-heading h2 { flex: 1; color: var(--emprende-navy); font-size: 1rem; font-weight: 730; }
+.emprende-portal-shell .market-side-heading > button { display: grid; place-items: center; width: 29px; height: 29px; border: 0; border-radius: 50%; background: transparent; color: #465671; cursor: pointer; }
+.emprende-portal-shell .market-side-heading > button:hover { background: #f2f6f7; color: var(--emprende-teal); }
+.emprende-portal-shell .market-business-summary-content { display: flex; align-items: center; gap: 13px; margin: 15px 0 14px; }
+.emprende-portal-shell .market-business-placeholder { display: grid; flex: 0 0 auto; place-items: center; width: 88px; height: 82px; border: 1px solid #dfe7ec; border-radius: 7px; background: linear-gradient(145deg, #eef3f5, #e3ebef); color: #698795; }
+.emprende-portal-shell .market-business-summary-content > div { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.emprende-portal-shell .market-business-summary-content strong { overflow: hidden; color: var(--emprende-navy); font-size: .83rem; text-overflow: ellipsis; }
+.emprende-portal-shell .market-business-summary-content span,.emprende-portal-shell .market-business-summary-content small { color: #64738b; font-size: .73rem; }
+.emprende-portal-shell .market-business-summary-content small { font-size: .69rem; }
+.emprende-portal-shell .market-business-empty { display: flex; align-items: center; gap: 12px; margin: 14px 0; }
+.emprende-portal-shell .market-business-empty .market-business-placeholder { width: 62px; height: 58px; }
+.emprende-portal-shell .market-business-empty p { color: #68778e; font-size: .75rem; line-height: 1.45; }
+.emprende-portal-shell .market-home-side .market-side-link { display: flex; width: 100%; align-items: center; justify-content: space-between; margin: 0; padding: 13px 1px 0; border-top: 1px solid #edf0f3; font-size: .75rem; }
+.emprende-portal-shell .market-notice-panel > p { margin: 13px 0 14px; color: #64738b; font-size: .8rem; line-height: 1.5; }
+.emprende-portal-shell .market-notice-icon { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 8px; background: #edf6f6; color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-notice-action { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 42px; padding: 0 10px; border: 1px solid #51aeb1; border-radius: 7px; background: white; color: var(--emprende-teal-dark); font: inherit; font-size: .75rem; font-weight: 700; cursor: pointer; }
+.emprende-portal-shell .market-notice-action:hover,.emprende-portal-shell .market-notice-action.enabled { background: #f0f9f8; }
+.emprende-portal-shell .market-notice-panel > small { display: block; margin-top: 10px; color: #8491a4; font-size: .65rem; line-height: 1.45; }
+.emprende-portal-shell .market-side-info { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 11px; border: 1px solid #e7ebee; border-radius: 8px; background: #f6f8f9; color: #68778a; }
+.emprende-portal-shell .market-side-info svg { flex: 0 0 auto; color: #657b92; }
+.emprende-portal-shell .market-side-info p { color: inherit; font-size: .68rem; line-height: 1.5; }
+.emprende-portal-shell .market-map-wrap { overflow: hidden; border: 1px solid var(--emprende-line); border-radius: 9px; background: #eef2f4; }
+.emprende-portal-shell .market-map { height: 580px; min-height: 390px; }
+.emprende-portal-shell .market-map-no-pins,.emprende-portal-shell .market-map-message { z-index: 500; padding: 10px 12px; border: 1px solid #dce4e9; border-radius: 7px; background: white; color: #52647c; font-size: .72rem; box-shadow: 0 2px 8px rgba(19,35,68,.1); }
+.emprende-portal-shell .market-map-no-pins { bottom: 52px; }
+.emprende-portal-shell .market-map-legend { border-top: 1px solid var(--emprende-line); background: white; color: #53637a; }
+.emprende-portal-shell .market-map-popup { color: var(--emprende-text); }
+.emprende-portal-shell .market-map-popup > strong { color: var(--emprende-navy); }
+.emprende-portal-shell .market-map-popup button { color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-leaflet-marker.selected { z-index: 1000 !important; transform: scale(1.18); filter: drop-shadow(0 0 0.3rem rgba(0, 90, 100, .38)); }
+.emprende-portal-shell .market-leaflet-marker.selected i { width: 12px; height: 12px; border: 3px solid white; }
+.emprende-portal-shell .market-callout { border-color: #d8e8e9; border-radius: 8px; background: #f2f9f9; color: #4f6875; }
+.emprende-portal-shell .market-callout > svg { color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-callout button { color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-page-heading:not(.emprende-home-heading .market-page-heading) { margin-bottom: 22px; }
+.emprende-portal-shell .market-panel,.emprende-portal-shell .market-application-card,.emprende-portal-shell .market-admin-event-list,.emprende-portal-shell .market-admin-applications article { border-color: var(--emprende-line); border-radius: 9px; box-shadow: 0 1px 2px rgba(19, 35, 68, .025); }
+.emprende-portal-shell .market-form-grid label,.emprende-portal-shell .market-inline-form label,.emprende-portal-shell .market-application-form label { color: #43516a; }
+.emprende-portal-shell .market-form-grid input,.emprende-portal-shell .market-form-grid select,.emprende-portal-shell .market-form-grid textarea,.emprende-portal-shell .market-inline-form input,.emprende-portal-shell .market-inline-form select,.emprende-portal-shell .market-application-form input,.emprende-portal-shell .market-application-form textarea { border-color: #d9e1e8; border-radius: 7px; color: var(--emprende-text); }
+.emprende-portal-shell .market-form-grid input:focus,.emprende-portal-shell .market-form-grid select:focus,.emprende-portal-shell .market-form-grid textarea:focus,.emprende-portal-shell .market-filters input:focus,.emprende-portal-shell .market-filters select:focus,.emprende-portal-shell .market-inline-form input:focus,.emprende-portal-shell .market-inline-form select:focus,.emprende-portal-shell .market-application-form input:focus,.emprende-portal-shell .market-application-form textarea:focus { border-color: #66b7b9; box-shadow: 0 0 0 3px rgba(0, 140, 145, .1); }
+.emprende-portal-shell .market-preferences { border-color: #e2e8ed; border-radius: 8px; background: #fafbfc; }
+.emprende-portal-shell .market-preferences strong,.emprende-portal-shell .market-admin-form h2,.emprende-portal-shell .market-admin-section > h2 { color: var(--emprende-navy); }
+.emprende-portal-shell .market-preferences strong svg,.emprende-portal-shell .market-admin-form h2 svg { color: var(--emprende-teal); }
+.emprende-portal-shell .market-switch input { accent-color: var(--emprende-teal); }
+.emprende-portal-shell .market-status.status-aprobada { color: #25734a; }
+.emprende-portal-shell .market-admin-tabs { background: #edf2f5; }
+.emprende-portal-shell .market-admin-tabs button.active { color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-application-icon { background: #edf5f6; color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-detail-panel { border-color: var(--emprende-line); }
+.emprende-portal-shell .market-detail-heading h2,.emprende-portal-shell .market-detail-block h3,.emprende-portal-shell .market-application-form h3 { color: var(--emprende-navy); font-family: inherit; }
+.emprende-portal-shell .market-detail-heading { background: #f8fafb; }
+.emprende-portal-shell .market-profile-summary { background: #f1f7f7; }
+.emprende-portal-shell .market-profile-summary strong { color: var(--emprende-navy); }
+.emprende-portal-shell .market-detail-map a,.emprende-portal-shell .market-application-main > button { color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-footer-nav { display: none; }
+.emprende-portal-shell .market-loading { color: #64738b; }
+.emprende-portal-shell .market-loading > span { border-color: #dce7e9; border-top-color: var(--emprende-teal); }
+.emprende-portal-shell .market-empty { border: 1px dashed #cfd9e1; border-radius: 9px; background: #fbfcfd; }
+.emprende-portal-shell .market-empty > span { background: #eaf4f4; color: var(--emprende-teal-dark); }
+.emprende-portal-shell .market-empty h2 { color: var(--emprende-navy); font-family: inherit; }
+.emprende-portal-shell .market-empty p { max-width: 470px; color: var(--emprende-muted); }
+.emprende-portal-shell .market-inline-message.success { border-color: #d3e9df; background: #f1f8f4; color: #32734e; }
+.emprende-portal-shell .market-inline-message.error,.emprende-portal-shell .market-error { border-color: #f0d6d3; background: #fff6f5; color: #9d4540; }
+.emprende-portal-shell .market-help-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.emprende-portal-shell .market-help-grid article { display: flex; flex-direction: column; align-items: flex-start; gap: 11px; min-height: 225px; padding: 19px; border: 1px solid var(--emprende-line); border-radius: 9px; background: white; }
+.emprende-portal-shell .market-help-grid article > span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--emprende-teal-pale); color: var(--emprende-teal-dark); font-size: .72rem; font-weight: 800; }
+.emprende-portal-shell .market-help-grid h2 { color: var(--emprende-navy); font-size: .94rem; }
+.emprende-portal-shell .market-help-grid article p { flex: 1; color: var(--emprende-muted); font-size: .76rem; line-height: 1.55; }
+.emprende-portal-shell .market-help-note { display: flex; grid-column: 1 / -1; align-items: center; gap: 8px; padding: 12px; border: 1px solid #e1e7ec; border-radius: 8px; background: white; color: #5f7086; font-size: .73rem; }
+.emprende-portal-shell .market-help-note svg { flex: 0 0 auto; }
+.emprende-portal-shell .notifications-dropdown { z-index: 960; top: calc(100% + 12px); right: -72px; border-color: var(--emprende-line); border-radius: 9px; box-shadow: 0 14px 35px rgba(19, 35, 68, .14); }
+.emprende-portal-shell .notifications-header { border-color: #e8edf1; color: var(--emprende-navy); }
+
+@media (max-width: 1120px) {
+  .emprende-header-inner { gap: 15px; width: min(100% - 36px, 1440px); }
+  .emprende-brand { min-width: 220px; }
+  .emprende-brand-copy small { font-size: .52rem; letter-spacing: .045em; }
+  .emprende-nav { gap: 0; }
+  .emprende-nav button { gap: 7px; padding: 0 9px; font-size: .79rem; }
+  .emprende-portal-shell .marketplace-page { width: min(100% - 36px, 1440px); }
+  .emprende-portal-shell .market-home-layout { grid-template-columns: minmax(0, 1fr) 310px; }
+  .emprende-portal-shell .market-home-explore.map-focus { grid-template-columns: minmax(0, 1fr); }
+  .emprende-portal-shell .market-home-explore.map-focus .market-map { height: 420px; }
+}
+@media (max-width: 820px) {
+  .emprende-header-inner { flex-wrap: wrap; gap: 0 12px; min-height: 0; padding-top: 10px; }
+  .emprende-brand { flex: 1; min-width: 0; min-height: 54px; }
+  .emprende-header-actions { flex: 0 0 auto; gap: 7px; padding-left: 8px; border-left: 0; }
+  .emprende-nav { order: 3; width: 100%; height: 50px; overflow-x: auto; }
+  .emprende-nav button { flex: 1 0 auto; }
+  .emprende-profile-button { gap: 6px; }
+  .emprende-portal-shell .market-home-layout { grid-template-columns: minmax(0, 1fr) 280px; gap: 14px; }
+  .emprende-portal-shell .market-filter-field { flex-basis: 155px; }
+  .emprende-portal-shell .market-filter-field.category { flex-basis: 160px; }
+}
+@media (max-width: 700px) {
+  .emprende-header-inner { width: 100%; padding: 5px 14px 0; }
+  .emprende-brand { gap: 8px; min-height: 51px; }
+  .emprende-brand-mark { width: 32px; height: 32px; }
+  .emprende-brand-mark span { width: 20px; height: 20px; }
+  .emprende-brand-copy strong { font-size: 1.12rem; }
+  .emprende-brand-copy small { overflow: hidden; max-width: 210px; font-size: .48rem; text-overflow: ellipsis; }
+  .emprende-nav { gap: 1px; height: 48px; margin: 0 -14px; padding: 0 9px; border-top: 1px solid #edf0f3; }
+  .emprende-nav button { gap: 6px; padding: 0 10px; font-size: .72rem; }
+  .emprende-nav button svg { width: 16px; height: 16px; }
+  .emprende-header-actions { gap: 2px; }
+  .emprende-icon-button { width: 36px; height: 36px; }
+  .emprende-profile-button { padding: 2px; }
+  .emprende-profile-name,.emprende-profile-button > svg { display: none; }
+  .emprende-avatar { width: 34px; height: 34px; }
+  .emprende-portal-shell .marketplace-page { width: auto; padding: 22px 15px 36px; }
+  .emprende-portal-shell .market-page-heading h1 { font-size: 1.9rem; }
+  .emprende-portal-shell .market-page-heading p { font-size: .88rem; }
+  .emprende-home-heading { display: block; margin-bottom: 17px; }
+  .emprende-home-heading .market-page-heading { margin-bottom: 13px; }
+  .emprende-home-cta { align-items: stretch; padding: 0; }
+  .emprende-home-cta .market-button { width: 100%; }
+  .emprende-home-cta small { padding: 0; text-align: center; }
+  .emprende-portal-shell .market-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 15px; }
+  .emprende-portal-shell .market-filter-field,.emprende-portal-shell .market-filter-field.category { min-width: 0; min-height: 57px; padding: 7px 8px; gap: 7px; }
+  .emprende-portal-shell .market-filter-field > svg { width: 15px; }
+  .emprende-portal-shell .market-filter-label small { font-size: .61rem; }
+  .emprende-portal-shell .market-filter-label select,.emprende-portal-shell .market-filter-label input { font-size: .71rem; }
+  .emprende-portal-shell .market-view-toggle { grid-column: 1 / -1; width: 100%; margin: 0; }
+  .emprende-portal-shell .market-view-toggle button { flex: 1; }
+  .emprende-portal-shell .market-clear-filters { grid-column: 1 / -1; justify-content: center; min-height: 28px; }
+  .emprende-portal-shell .market-home-layout { display: flex; flex-direction: column; gap: 13px; }
+  .emprende-portal-shell .market-home-main,.emprende-portal-shell .market-home-side { width: 100%; }
+  .emprende-portal-shell .market-home-opportunities { padding: 14px 11px; }
+  .emprende-portal-shell .market-home-section-head { align-items: flex-start; }
+  .emprende-portal-shell .market-home-section-head h2 { font-size: .93rem; }
+  .emprende-portal-shell .market-home-section-head .market-text-button { white-space: nowrap; }
+  .emprende-portal-shell .market-explore-layout { display: block; }
+  .emprende-portal-shell .market-explore-layout.map-focus { display: flex; flex-direction: column; }
+  .emprende-portal-shell .market-event-card-row { grid-template-columns: 82px minmax(0, 1fr); min-height: 0; }
+  .emprende-portal-shell .market-event-visual { min-height: 142px; gap: 8px; }
+  .emprende-portal-shell .market-event-visual-mark { width: 48px; height: 48px; }
+  .emprende-portal-shell .market-event-visual-mark svg { width: 22px; }
+  .emprende-portal-shell .market-event-visual > span:last-child { font-size: .47rem; }
+  .emprende-portal-shell .market-event-card-main { padding: 11px 9px 8px; }
+  .emprende-portal-shell .market-event-card-main h3 { margin: 7px 0 4px; font-size: .83rem; }
+  .emprende-portal-shell .market-event-card-main > p { font-size: .68rem; -webkit-line-clamp: 2; }
+  .emprende-portal-shell .market-event-card-top { align-items: flex-start; }
+  .emprende-portal-shell .market-event-locality { font-size: .62rem; }
+  .emprende-portal-shell .market-status { min-height: 21px; padding: 2px 7px; font-size: .58rem; }
+  .emprende-portal-shell .market-event-card-bottom { align-items: flex-start; flex-direction: column; gap: 10px; padding: 10px; }
+  .emprende-portal-shell .market-event-card-facts { width: 100%; flex-direction: column; gap: 8px; }
+  .emprende-portal-shell .market-event-card-bottom .market-button { width: 100%; }
+  .emprende-portal-shell .market-map-wrap,.emprende-portal-shell .market-map { height: calc(100dvh - 280px); min-height: 340px; max-height: 560px; }
+  .emprende-portal-shell .market-home-side { gap: 11px; }
+  .emprende-portal-shell .market-business-summary,.emprende-portal-shell .market-notice-panel { padding: 15px; }
+  .emprende-portal-shell .market-help-grid { grid-template-columns: 1fr; }
+  .emprende-portal-shell .market-help-grid article { min-height: 0; }
+  .emprende-portal-shell .market-help-note { grid-column: auto; align-items: flex-start; }
+  .emprende-portal-shell .market-detail-panel { width: 100%; }
+  .emprende-portal-shell .market-detail-keyfacts > div { flex-basis: calc(50% - 8px); }
+  .emprende-portal-shell .notifications-dropdown { position: fixed; top: 112px; right: 10px; left: 10px; width: auto; max-width: none; }
+}
+
+@media (max-width: 390px) {
+  .emprende-brand-copy small { max-width: 172px; }
+  .emprende-portal-shell .market-page-heading h1 { font-size: 1.68rem; }
+  .emprende-portal-shell .market-event-card-row { grid-template-columns: 68px minmax(0, 1fr); }
+  .emprende-portal-shell .market-event-card-main { padding-inline: 7px; }
+  .emprende-portal-shell .market-event-visual-mark { width: 42px; height: 42px; }
+  .emprende-portal-shell .market-event-card-main h3 { font-size: .77rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emprende-portal-shell *, .emprende-header * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

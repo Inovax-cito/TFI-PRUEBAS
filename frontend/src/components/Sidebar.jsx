@@ -14,6 +14,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Store,
+  ClipboardList,
+  Compass,
+  TicketCheck,
+  BriefcaseBusiness,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -25,22 +29,28 @@ export const Sidebar = ({
   mobileOpen,
   setMobileOpen,
 }) => {
-  const { user, isAdmin, logout, businessConfig, unreadNotifications } = useAuth();
+  const { user, isAdmin, logout, unreadNotifications } = useAuth();
+  const isEntrepreneur = user?.role === 'EMPRENDEDOR';
 
   const navItems = [
-    { id: 'dashboard', label: 'Inicio', icon: LayoutDashboard, adminOnly: false },
-    { id: 'sales', label: 'Ventas', icon: ShoppingCart, adminOnly: false },
-    { id: 'products', label: 'Productos', icon: Package, adminOnly: false },
-    { id: 'inventory', label: 'Inventario', icon: Boxes, adminOnly: false },
-    { id: 'purchases', label: 'Compras', icon: Truck, adminOnly: true },
-    { id: 'suppliers', label: 'Proveedores', icon: Building2, adminOnly: false },
-    { id: 'cash', label: 'Caja', icon: Wallet, adminOnly: false },
-    { id: 'reports', label: 'Reportes', icon: BarChart3, adminOnly: true },
-    { id: 'users', label: 'Usuarios', icon: Users, adminOnly: true },
-    { id: 'config', label: 'Configuración', icon: Settings, adminOnly: false },
+    { id: 'portal', label: 'Inicio', icon: LayoutDashboard, adminOnly: false },
+    { id: 'business', label: 'Mi negocio', icon: BriefcaseBusiness, adminOnly: false },
+    { id: 'events', label: 'Ferias y eventos', icon: Compass, adminOnly: false },
+    { id: 'applications', label: 'Mis solicitudes', icon: TicketCheck, adminOnly: false },
+    { id: 'market-admin', label: 'Administración', icon: ClipboardList, adminOnly: true },
+    { id: 'dashboard', label: 'Panel comercial', icon: BarChart3, adminOnly: false, staffOnly: true },
+    { id: 'sales', label: 'Ventas', icon: ShoppingCart, adminOnly: false, staffOnly: true },
+    { id: 'products', label: 'Productos', icon: Package, adminOnly: false, staffOnly: true },
+    { id: 'inventory', label: 'Inventario', icon: Boxes, adminOnly: false, staffOnly: true },
+    { id: 'purchases', label: 'Compras', icon: Truck, adminOnly: true, staffOnly: true },
+    { id: 'suppliers', label: 'Proveedores', icon: Building2, adminOnly: false, staffOnly: true },
+    { id: 'cash', label: 'Caja', icon: Wallet, adminOnly: false, staffOnly: true },
+    { id: 'reports', label: 'Reportes', icon: BarChart3, adminOnly: true, staffOnly: true },
+    { id: 'users', label: 'Usuarios', icon: Users, adminOnly: true, staffOnly: true },
+    { id: 'config', label: 'Configuración', icon: Settings, adminOnly: false, staffOnly: true },
   ];
 
-  const visibleItems = navItems.filter((item) => !item.adminOnly || isAdmin);
+  const visibleItems = navItems.filter((item) => (!item.adminOnly || isAdmin) && (!item.staffOnly || !isEntrepreneur));
 
   const handleItemClick = (id) => {
     setActiveTab(id);
@@ -63,8 +73,8 @@ export const Sidebar = ({
             </div>
             {!collapsed && (
               <div className="brand-text">
-                <span className="brand-title">{businessConfig?.businessName || 'Autogestión'}</span>
-                <span className="brand-subtitle">Comercial & Caja</span>
+                <span className="brand-title">Emprende</span>
+                <span className="brand-subtitle">Negocios y eventos</span>
               </div>
             )}
           </div>

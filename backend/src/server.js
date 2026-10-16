@@ -13,6 +13,7 @@ import cashRoutes from './routes/cashRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import configRoutes from './routes/configRoutes.js';
+import marketplaceRoutes from './routes/marketplaceRoutes.js';
 import prisma from './config/db.js';
 
 dotenv.config();
@@ -48,7 +49,7 @@ app.get('/api/health', async (req, res) => {
       status: 'OK',
       timestamp: new Date(),
       database: 'MySQL Conectado',
-      system: 'Sistema de Autogestión Administrativo',
+      system: 'Emprende',
     });
   } catch (error) {
     res.status(500).json({ status: 'ERROR', database: 'Desconectado', error: error.message });
@@ -68,6 +69,7 @@ app.use('/api/cash', cashRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
 
 // Manejador de rutas no encontradas
 app.use((req, res) => {

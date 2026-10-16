@@ -4,6 +4,34 @@ import prisma from '../config/db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sistema_autogestion_jwt_secret_key_pro_2026';
 
+export const register = async (req, res) => {
+  try {
+    const { name, lastName, username, email, password } = req.body;
+    if (!name?.trim() || !lastName?.trim() || !username?.trim() || !email?.trim() || !password) {
+      return res.status(400).json({ message: 'Completá nombre, apellido, usuario, correo y contraseña.' });
+    }
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
+    if (!/^[a-z0-9._-]{3,30}$/.test(cleanUsername)) {
+      return res.status(400).json({ message: 'El usuario debe tener entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo.' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return res.status(400).json({ message: 'Ingresá un correo electrónico válido.' });
+    if (password.length < 8) return res.status(400).json({ message: 'La contraseña debe tener al menos 8 caracteres.' });
+    const existing = await prisma.user.findFirst({ where: { OR: [{ username: cleanUsername }, { email: cleanEmail }] } });
+    if (existing) return res.status(409).json({ message: 'Ese usuario o correo ya está registrado. Probá iniciar sesión.' });
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: { name: name.trim(), lastName: lastName.trim(), username: cleanUsername, email: cleanEmail, password: passwordHash, role: 'EMPRENDEDOR' },
+      select: { id: true, name: true, lastName: true, username: true, email: true, role: true },
+    });
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+    const businessConfig = await prisma.businessConfig.findFirst();
+    res.status(201).json({ message: 'Cuenta creada.', token, user, businessConfig });
+  } catch (error) {
+    res.status(500).json({ message: 'No se pudo crear la cuenta.' });
+  }
+};
+
 export const login = async (req, res) => {
   try {
     const { identifier, password } = req.body;

@@ -200,7 +200,7 @@ export const closeRegister = async (req, res) => {
 
 export const createManualMovement = async (req, res) => {
   try {
-    const { type, amount, concept, category = 'MANUAL' } = req.body;
+    const { type, amount, concept, category = 'MANUAL', eventId } = req.body;
 
     if (!type || !amount || !concept) {
       return res.status(400).json({ message: 'Tipo, monto y concepto son requeridos.' });
@@ -215,11 +215,26 @@ export const createManualMovement = async (req, res) => {
       return res.status(400).json({ message: 'El importe debe ser mayor a 0.' });
     }
 
-    const openRegister = await prisma.cashRegister.findFirst({
-      where: { status: 'ABIERTA' },
-    });
+    let eventLink = {};
+    const isEventExpense = eventId !== undefined && eventId !== null && eventId !== '';
+    if (req.user.role === 'EMPRENDEDOR' && !isEventExpense) {
+      return res.status(403).json({ message: 'Las cuentas emprendedoras solo pueden registrar gastos dentro de una participación aprobada.' });
+    }
+    if (isEventExpense) {
+      if (type !== 'EGRESO') return res.status(400).json({ message: 'Los ingresos del evento se registran como ventas; acá podés cargar gastos.' });
+      const parsedEventId = Number(eventId);
+      if (!Number.isInteger(parsedEventId) || parsedEventId < 1) return res.status(400).json({ message: 'La convocatoria seleccionada no es válida.' });
+      const business = await prisma.businessProfile.findUnique({ where: { ownerUserId: req.user.id } });
+      const approved = business && await prisma.eventApplication.findFirst({
+        where: { eventId: parsedEventId, businessId: business.id, applicantUserId: req.user.id, status: 'APROBADA' },
+      });
+      if (!approved) return res.status(403).json({ message: 'Solo un negocio aprobado puede registrar gastos para este evento.' });
+      eventLink = { eventId: parsedEventId, businessId: business.id };
+    }
 
-    if (!openRegister) {
+    const openRegister = isEventExpense ? null : await prisma.cashRegister.findFirst({ where: { status: 'ABIERTA' } });
+
+    if (!isEventExpense && !openRegister) {
       return res.status(400).json({
         message: 'No hay ninguna caja abierta. Debe abrir la caja para registrar movimientos.',
       });
@@ -227,12 +242,13 @@ export const createManualMovement = async (req, res) => {
 
     const movement = await prisma.cashMovement.create({
       data: {
-        cashRegisterId: openRegister.id,
+        cashRegisterId: openRegister?.id || null,
         type,
-        category,
+        category: isEventExpense ? 'GASTO_EVENTO' : category,
         amount: amt,
         concept: concept.trim(),
         userId: req.user.id,
+        ...eventLink,
       },
       include: {
         user: { select: { id: true, name: true, lastName: true } },

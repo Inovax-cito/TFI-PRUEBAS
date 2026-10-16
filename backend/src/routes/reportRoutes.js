@@ -5,13 +5,13 @@ import {
   getFinancialReport,
   getInventoryReport,
 } from '../controllers/reportController.js';
-import { authenticateToken, requireAdmin } from '../middlewares/auth.js';
+import { authenticateToken, requireAdmin, requireStaff } from '../middlewares/auth.js';
 
 const router = Router();
 
 router.use(authenticateToken);
 
-router.get('/dashboard', getDashboardMetrics);
+router.get('/dashboard', requireStaff, getDashboardMetrics);
 router.get('/sales', requireAdmin, getSalesReport);
 router.get('/financial', requireAdmin, getFinancialReport);
 router.get('/inventory', requireAdmin, getInventoryReport);

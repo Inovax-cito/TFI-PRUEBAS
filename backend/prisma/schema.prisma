@@ -10,6 +10,7 @@ generator client {
 enum Role {
   ADMINISTRADOR
   EMPLEADO
+  EMPRENDEDOR
 }
 
 enum MovementType {
@@ -41,6 +42,26 @@ enum CashMovementType {
   EGRESO
 }
 
+enum BusinessKind {
+  FIJO
+  ITINERANTE
+}
+
+enum OpportunityStatus {
+  BORRADOR
+  PUBLICADA
+  CERRADA
+}
+
+enum ApplicationStatus {
+  BORRADOR
+  ENVIADA
+  EN_REVISION
+  APROBADA
+  NO_SELECCIONADA
+  CANCELADA
+}
+
 model User {
   id                 Int                 @id @default(autoincrement())
   name               String
@@ -60,6 +81,10 @@ model User {
   openedRegisters    CashRegister[]      @relation("OpenedRegisters")
   closedRegisters    CashRegister[]      @relation("ClosedRegisters")
   cancelledSales     Sale[]              @relation("CancelledSales")
+  businessProfile    BusinessProfile?
+  organizedEvents    MarketEvent[]        @relation("EventOrganizer")
+  eventApplications EventApplication[]   @relation("Applicant")
+  userNotifications Notification[]
 
   @@map("users")
 }
@@ -143,6 +168,74 @@ model Supplier {
   @@map("suppliers")
 }
 
+model BusinessProfile {
+  id                    Int                @id @default(autoincrement())
+  ownerUserId           Int                @unique
+  owner                 User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  name                  String
+  kind                  BusinessKind       @default(FIJO)
+  category              String
+  description           String?            @db.Text
+  locality              String
+  address               String?
+  contactPhone          String?
+  contactEmail          String?
+  notificationsEnabled  Boolean            @default(true)
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  applications          EventApplication[]
+  sales                 Sale[]
+  cashMovements         CashMovement[]
+
+  @@map("business_profiles")
+}
+
+model MarketEvent {
+  id                 Int                @id @default(autoincrement())
+  organizerUserId    Int
+  organizer          User               @relation("EventOrganizer", fields: [organizerUserId], references: [id])
+  name               String
+  locality           String
+  address            String?
+  latitude           Float?
+  longitude          Float?
+  startsAt           DateTime
+  endsAt             DateTime
+  applicationDeadline DateTime
+  description        String             @db.Text
+  acceptedCategories String?            @db.Text
+  requirements       String?            @db.Text
+  capacity           Int?
+  status             OpportunityStatus  @default(BORRADOR)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  applications       EventApplication[]
+  sales              Sale[]
+  cashMovements      CashMovement[]
+
+  @@index([status, locality, startsAt])
+  @@map("market_events")
+}
+
+model EventApplication {
+  id                Int               @id @default(autoincrement())
+  eventId           Int
+  event             MarketEvent       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  businessId        Int
+  business          BusinessProfile   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  applicantUserId   Int
+  applicant         User              @relation("Applicant", fields: [applicantUserId], references: [id], onDelete: Cascade)
+  offeredProduct    String
+  additionalInfo    String?           @db.Text
+  status            ApplicationStatus @default(BORRADOR)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@unique([eventId, businessId])
+  @@index([applicantUserId, status])
+  @@map("event_applications")
+}
+
 model Purchase {
   id             Int              @id @default(autoincrement())
   purchaseNumber String           @unique
@@ -188,6 +281,10 @@ model Sale {
   user              User         @relation(fields: [userId], references: [id])
   createdAt         DateTime     @default(now())
   details           SaleDetail[]
+  eventId           Int?
+  event             MarketEvent?     @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  businessId        Int?
+  business           BusinessProfile? @relation(fields: [businessId], references: [id], onDelete: SetNull)
 
   @@map("sales")
 }
@@ -236,6 +333,10 @@ model CashMovement {
   userId         Int
   user           User             @relation(fields: [userId], references: [id])
   createdAt      DateTime         @default(now())
+  eventId        Int?
+  event          MarketEvent?     @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  businessId     Int?
+  business       BusinessProfile? @relation(fields: [businessId], references: [id], onDelete: SetNull)
 
   @@map("cash_movements")
 }
@@ -247,6 +348,8 @@ model Notification {
   description String   @db.Text
   read        Boolean  @default(false)
   createdAt   DateTime @default(now())
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }

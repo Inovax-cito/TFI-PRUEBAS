@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Store, Eye, EyeOff, Lock, User, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Store, Eye, EyeOff, Lock, User, AlertCircle, ArrowRight, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { apiRequest } from '../utils/api.js';
 
@@ -11,6 +11,8 @@ export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [registering, setRegistering] = useState(false);
+  const [registration, setRegistration] = useState({ name: '', lastName: '', username: '', email: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,9 +20,9 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      const data = await apiRequest('/auth/login', {
+      const data = await apiRequest(registering ? '/auth/register' : '/auth/login', {
         method: 'POST',
-        body: { identifier, password },
+        body: registering ? { ...registration, password } : { identifier, password },
       });
       login(data);
     } catch (err) {
@@ -30,27 +32,19 @@ export const LoginPage = () => {
     }
   };
 
-  const handleQuickLogin = (userType) => {
-    if (userType === 'admin') {
-      setIdentifier('admin');
-      setPassword('admin123');
-    } else {
-      setIdentifier('empleado');
-      setPassword('empleado123');
-    }
-    setError(null);
-  };
+  const changeMode = () => { setRegistering(!registering); setError(null); setPassword(''); };
 
   return (
     <div
+      className="emprende-login"
       style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#0f172a',
+        backgroundColor: '#f5f7f9',
         padding: '20px',
-        backgroundImage: 'radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%), radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%)',
+        backgroundImage: 'none',
       }}
     >
       <div
@@ -59,7 +53,8 @@ export const LoginPage = () => {
           maxWidth: '440px',
           backgroundColor: '#ffffff',
           borderRadius: '16px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          boxShadow: '0 12px 38px rgba(19, 35, 68, 0.1)',
+          border: '1px solid #e0e6ec',
           overflow: 'hidden',
         }}
       >
@@ -76,22 +71,22 @@ export const LoginPage = () => {
               width: '52px',
               height: '52px',
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              background: 'linear-gradient(135deg, #07999b 0%, #087980 100%)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 16px auto',
-              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.35)',
+              boxShadow: '0 4px 12px rgba(0, 140, 145, 0.2)',
             }}
           >
             <Store size={28} />
           </div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
-            Sistema de Autogestión
+            Emprende
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
-            Administración comercial, ventas, inventario y caja
+            Ferias, eventos y oportunidades en Banda del Río Salí, Cruz Alta y Alderetes
           </p>
         </div>
 
@@ -118,11 +113,17 @@ export const LoginPage = () => {
           )}
 
           <form onSubmit={handleSubmit}>
+            {registering && <>
+              <div className="form-group"><label className="form-label">Nombre</label><input className="form-input" required maxLength={80} value={registration.name} onChange={(e) => setRegistration({ ...registration, name: e.target.value })} autoComplete="given-name" /></div>
+              <div className="form-group"><label className="form-label">Apellido</label><input className="form-input" required maxLength={80} value={registration.lastName} onChange={(e) => setRegistration({ ...registration, lastName: e.target.value })} autoComplete="family-name" /></div>
+              <div className="form-group"><label className="form-label"><User size={15} /> Nombre de usuario</label><input className="form-input" required minLength={3} maxLength={30} pattern="[A-Za-z0-9._-]+" value={registration.username} onChange={(e) => setRegistration({ ...registration, username: e.target.value })} autoComplete="username" /></div>
+              <div className="form-group"><label className="form-label"><Mail size={15} /> Correo electrónico</label><input className="form-input" type="email" required maxLength={120} value={registration.email} onChange={(e) => setRegistration({ ...registration, email: e.target.value })} autoComplete="email" /></div>
+            </>}
             <div className="form-group">
               <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <User size={15} className="text-muted" /> Usuario o Correo Electrónico
+                {!registering && <><User size={15} className="text-muted" /> Usuario o Correo Electrónico</>}
               </label>
-              <input
+              {!registering && <input
                 type="text"
                 className="form-input"
                 placeholder="ej: admin o admin@comercio.com"
@@ -130,7 +131,7 @@ export const LoginPage = () => {
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
                 autoFocus
-              />
+              />}
             </div>
 
             <div className="form-group">
@@ -141,7 +142,8 @@ export const LoginPage = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   className="form-input"
-                  placeholder="Ingrese su contraseña"
+                  placeholder={registering ? 'Al menos 8 caracteres' : 'Ingrese su contraseña'}
+                  minLength={registering ? 8 : undefined}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{ paddingRight: '40px' }}
@@ -181,42 +183,17 @@ export const LoginPage = () => {
                 </>
               ) : (
                 <>
-                  Iniciar Sesión <ArrowRight size={18} />
+                  {registering ? 'Crear cuenta' : 'Iniciar sesión'} <ArrowRight size={18} />
                 </>
               )}
             </button>
           </form>
 
-          {/* Accesos rápidos para evaluación */}
-          <div
-            style={{
-              marginTop: '28px',
-              paddingTop: '20px',
-              borderTop: '1px solid #f1f5f9',
-            }}
-          >
-            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px', textAlign: 'center' }}>
-              Credenciales de prueba rápida:
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={() => handleQuickLogin('admin')}
-                style={{ fontSize: '0.75rem' }}
-              >
-                <ShieldCheck size={14} className="text-primary" /> Admin (Joaquín)
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={() => handleQuickLogin('empleado')}
-                style={{ fontSize: '0.75rem' }}
-              >
-                <User size={14} className="text-muted" /> Empleado (Aaron)
-              </button>
-            </div>
+          <div style={{ marginTop: '20px', textAlign: 'center', color: '#64748b', fontSize: '.82rem' }}>
+            {registering ? '¿Ya tenés cuenta?' : '¿Primera vez en la plataforma?'}{' '}
+            <button type="button" onClick={changeMode} style={{ border: 0, background: 'none', color: '#176a4a', fontWeight: 700, cursor: 'pointer' }}>{registering ? 'Iniciar sesión' : 'Crear cuenta'}</button>
           </div>
+          {registering && <p style={{ marginTop: 12, textAlign: 'center', color: '#7a8a80', fontSize: '.7rem', lineHeight: 1.45 }}>La cuenta nueva tiene permisos de emprendedor. La revisión de postulaciones queda a cargo de un administrador.</p>}
         </div>
 
 

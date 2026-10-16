@@ -5,15 +5,15 @@ import {
   createAdjustment,
   getLowStockProducts,
 } from '../controllers/inventoryController.js';
-import { authenticateToken, requireAdmin } from '../middlewares/auth.js';
+import { authenticateToken, requireAdmin, requireStaff } from '../middlewares/auth.js';
 
 const router = Router();
 
 router.use(authenticateToken);
 
-router.get('/summary', getInventorySummary);
-router.get('/movements', getInventoryMovements);
-router.get('/low-stock', getLowStockProducts);
+router.get('/summary', requireStaff, getInventorySummary);
+router.get('/movements', requireStaff, getInventoryMovements);
+router.get('/low-stock', requireStaff, getLowStockProducts);
 router.post('/adjustments', requireAdmin, createAdjustment);
 
 export default router;
