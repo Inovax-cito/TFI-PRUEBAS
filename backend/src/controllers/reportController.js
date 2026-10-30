@@ -94,8 +94,8 @@ export const getDashboardMetrics = async (req, res) => {
     }
 
     // 6. Gráfico: Ventas de los últimos 7 días
-    const last7Days = [];
-    for (let i = 6; i >= 0; i--) {
+    // Las 7 consultas se lanzan en paralelo (cada ida y vuelta a la base remota suma latencia)
+    const last7Days = await Promise.all([6, 5, 4, 3, 2, 1, 0].map(async (i) => {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dayStart = new Date(d);
@@ -115,13 +115,13 @@ export const getDashboardMetrics = async (req, res) => {
       const dayTotal = daySales.reduce((acc, s) => acc + Number(s.total), 0);
       const dayName = d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'numeric' });
 
-      last7Days.push({
+      return {
         date: d.toISOString().split('T')[0],
         label: dayName,
         total: dayTotal,
         count: daySales.length,
-      });
-    }
+      };
+    }));
 
     // 7. Gráfico: Top 5 productos más vendidos (todo el historial o últimos 30 días)
     const saleDetails = await prisma.saleDetail.findMany({
