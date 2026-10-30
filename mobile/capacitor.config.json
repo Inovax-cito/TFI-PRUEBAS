@@ -1,0 +1,12 @@
+{
+  "appId": "ar.tfi.emprende",
+  "appName": "Emprende",
+  "webDir": "www",
+  "server": {
+    "url": "https://emprende-mya5.onrender.com",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
