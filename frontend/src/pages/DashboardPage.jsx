@@ -28,96 +28,20 @@ import { apiRequest } from '../utils/api.js';
 import { formatCurrency, formatDateTime } from '../utils/formatters.js';
 import { CHART, TOOLTIP_STYLE, shortMoney } from '../utils/chartTheme.js';
 
-const KIOSCO_FALLBACK_DASHBOARD = {
-  cards: {
-    salesTodayCount: 18,
-    salesTodayTotal: 48750,
-    todayIncomes: 39500,
-    todayExpenses: 4200,
-    estimatedProfitToday: 19300,
-    totalProducts: 24,
-    lowStockCount: 3,
-    pendingPurchasesCount: 1,
-    cashStatus: {
-      isOpen: true,
-      currentBalance: 42500,
-    },
-  },
-  charts: {
-    last7Days: [
-      { date: '2026-09-29', label: 'Lun 29/9', total: 38200, count: 14 },
-      { date: '2026-09-30', label: 'Mar 30/9', total: 42100, count: 16 },
-      { date: '2026-10-01', label: 'Mié 1/10', total: 49500, count: 19 },
-      { date: '2026-10-02', label: 'Jue 2/10', total: 53800, count: 21 },
-      { date: '2026-10-03', label: 'Vie 3/10', total: 68400, count: 26 },
-      { date: '2026-10-04', label: 'Sáb 4/10', total: 72900, count: 28 },
-      { date: '2026-10-05', label: 'Hoy', total: 48750, count: 18 },
-    ],
-    topProducts: [
-      { id: 1, name: 'Alfajor Havanna Mixto', quantity: 42, total: 79800 },
-      { id: 2, name: 'Coca-Cola 1.5L', quantity: 38, total: 98800 },
-      { id: 3, name: 'Galletitas Oreo 118g', quantity: 35, total: 50750 },
-      { id: 4, name: 'Chicles Beldent Menta', quantity: 31, total: 23250 },
-      { id: 5, name: 'Cerveza Quilmes Clásica 1L', quantity: 24, total: 57600 },
-    ],
-  },
-  recentActivity: [
-    {
-      id: 'act-1',
-      type: 'VENTA',
-      title: 'Venta VTA-000124',
-      description: 'Monto: $ 6.450,00 (Efectivo)',
-      status: 'COMPLETADA',
-      userName: 'Joaquín Pérez (Admin)',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 'act-2',
-      type: 'VENTA',
-      title: 'Venta VTA-000123',
-      description: 'Monto: $ 4.350,00 (Mercado Pago / QR)',
-      status: 'COMPLETADA',
-      userName: 'Joaquín Pérez (Admin)',
-      createdAt: new Date(Date.now() - 15 * 60000).toISOString(),
-    },
-    {
-      id: 'act-3',
-      type: 'COMPRA',
-      title: 'Compra COM-000008',
-      description: 'Proveedor: Distribuidora Arcor S.A. - Total: $ 45.000,00',
-      status: 'RECIBIDA',
-      userName: 'Joaquín Pérez (Admin)',
-      createdAt: new Date(Date.now() - 60 * 60000).toISOString(),
-    },
-    {
-      id: 'act-4',
-      type: 'VENTA',
-      title: 'Venta VTA-000122',
-      description: 'Monto: $ 2.600,00 (Tarjeta de Débito)',
-      status: 'COMPLETADA',
-      userName: 'Joaquín Pérez (Admin)',
-      createdAt: new Date(Date.now() - 120 * 60000).toISOString(),
-    },
-  ],
-};
-
 export const DashboardPage = ({ setActiveTab }) => {
-  const [data, setData] = useState(KIOSCO_FALLBACK_DASHBOARD);
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchDashboardData = async () => {
     try {
       setError(null);
       const res = await apiRequest('/reports/dashboard');
-      if (res?.cards) {
-        setData(res);
-      } else {
-        setData(KIOSCO_FALLBACK_DASHBOARD);
-      }
+      setData(res);
     } catch (err) {
-      console.log('Usando datos demostrativos del kiosco');
-      setData(KIOSCO_FALLBACK_DASHBOARD);
+      setError(err.message || 'No se pudo cargar el panel comercial.');
+    } finally {
+      setLoading(false);
     }
   };
 
