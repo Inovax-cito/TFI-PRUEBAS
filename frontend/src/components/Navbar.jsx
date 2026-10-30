@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Bell, User, LogOut, Store, Shield } from 'lucide-react';
+import { Menu, Bell, LogOut, Store, Shield, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { NotificationDropdown } from './NotificationDropdown.jsx';
 import { ProfileModal } from './ProfileModal.jsx';
@@ -30,20 +30,22 @@ export const Navbar = ({ activeTab, setMobileOpen }) => {
       case 'business': return 'Mi negocio';
       case 'events': return 'Ferias y eventos';
       case 'applications': return 'Mis solicitudes';
-      case 'market-admin': return 'Administración de eventos';
-      case 'dashboard': return 'Panel Principal';
-      case 'sales': return 'Punto de Venta & Operaciones';
-      case 'products': return 'Catálogo de Productos';
-      case 'inventory': return 'Control de Inventario';
-      case 'purchases': return 'Gestión de Compras';
-      case 'suppliers': return 'Directorio de Proveedores';
-      case 'cash': return 'Control de Caja & Arqueo';
-      case 'reports': return 'Reportes & Estadísticas';
-      case 'users': return 'Gestión de Usuarios';
-      case 'config': return 'Configuración del Sistema';
+      case 'market-admin': return 'Administrar ferias';
+      case 'dashboard': return 'Panel comercial';
+      case 'sales': return 'Ventas';
+      case 'products': return 'Productos';
+      case 'inventory': return 'Inventario';
+      case 'purchases': return 'Compras';
+      case 'suppliers': return 'Proveedores';
+      case 'cash': return 'Caja';
+      case 'reports': return 'Reportes';
+      case 'users': return 'Usuarios';
+      case 'config': return 'Configuración';
       default: return 'Emprende';
     }
   };
+
+  const sectionTitle = ['users', 'config'].includes(activeTab) ? 'Ajustes' : 'Gestión del comercio';
 
   return (
     <>
@@ -58,10 +60,12 @@ export const Navbar = ({ activeTab, setMobileOpen }) => {
             <Menu size={20} />
           </button>
 
-          <div className="navbar-store-info">
+          <nav className="navbar-breadcrumb" aria-label="Ubicación actual">
             <Store size={16} className="text-primary" />
-            <span>Emprende · Tucumán</span>
-          </div>
+            <span>{sectionTitle}</span>
+            <ChevronRight size={14} />
+            <strong>{getPageTitle(activeTab)}</strong>
+          </nav>
         </div>
 
         <div className="navbar-right">
@@ -99,7 +103,7 @@ export const Navbar = ({ activeTab, setMobileOpen }) => {
                 {user?.name} {user?.lastName}
               </span>
               <span style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                <Shield size={10} /> {user?.role}
+                <Shield size={10} /> {isAdmin ? 'Administrador' : user?.role === 'EMPLEADO' ? 'Empleado' : user?.role}
               </span>
             </div>
           </div>
@@ -109,7 +113,7 @@ export const Navbar = ({ activeTab, setMobileOpen }) => {
             className="nav-action-btn"
             onClick={logout}
             title="Cerrar sesión"
-            style={{ color: '#ef4444' }}
+            style={{ color: 'var(--color-danger)' }}
           >
             <LogOut size={18} />
           </button>

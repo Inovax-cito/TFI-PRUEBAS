@@ -175,7 +175,7 @@ export const InventoryPage = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <Boxes size={24} className="text-primary" /> Control de Inventario & Existencias
+            <Boxes size={24} className="text-primary" /> Inventario
           </h1>
           <p className="page-subtitle">
             Seguimiento de stock en tiempo real, ajustes físicos y alertas automáticas de reposición
@@ -187,7 +187,7 @@ export const InventoryPage = () => {
             className={`btn ${activeTab === 'stock' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('stock')}
           >
-            <Boxes size={16} /> Stock Actual
+            <Boxes size={16} /> Stock actual
           </button>
           <button
             className={`btn ${activeTab === 'movements' ? 'btn-primary' : 'btn-secondary'}`}
@@ -199,7 +199,7 @@ export const InventoryPage = () => {
             className={`btn ${activeTab === 'alerts' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('alerts')}
           >
-            <AlertTriangle size={16} /> Alertas de Reposición ({summary?.lowStockCount || 0})
+            <AlertTriangle size={16} /> Alertas de reposición ({summary?.lowStockCount || 0})
           </button>
         </div>
       </div>
@@ -313,7 +313,7 @@ export const InventoryPage = () => {
                         <td><strong>{p.name}</strong></td>
                         <td><span className="badge badge-neutral">{p.category?.name || 'General'}</span></td>
                         <td>
-                          <span style={{ fontSize: '1rem', fontWeight: 700, color: isOutOfStock ? '#dc2626' : isLow ? '#d97706' : '#1e293b' }}>
+                          <span style={{ fontSize: '1rem', fontWeight: 700, color: isOutOfStock ? '#dc2626' : isLow ? '#d97706' : 'var(--color-text-main)' }}>
                             {p.currentStock} {p.unit}
                           </span>
                         </td>
@@ -539,7 +539,7 @@ export const InventoryPage = () => {
 
                 <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', marginBottom: '16px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>PRODUCTO SELECCIONADO</div>
-                  <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
+                  <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
                     {selectedProductForAdjustment.name}
                   </div>
                   <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '2px' }}>

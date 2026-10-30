@@ -178,7 +178,7 @@ export const ProductsPage = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <Package size={24} className="text-primary" /> Catálogo de Productos
+            <Package size={24} className="text-primary" /> Productos
           </h1>
           <p className="page-subtitle">
             Gestión integral de artículos, precios, códigos de barra y márgenes
@@ -295,7 +295,7 @@ export const ProductsPage = () => {
                         {p.sku}
                       </td>
                       <td>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{p.name}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--color-text-main)' }}>{p.name}</div>
                         {p.description && (
                           <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{p.description}</div>
                         )}

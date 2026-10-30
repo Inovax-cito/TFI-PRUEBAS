@@ -13,8 +13,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Store,
   ClipboardList,
+  PieChart,
   Compass,
   TicketCheck,
   BriefcaseBusiness,
@@ -33,22 +33,28 @@ export const Sidebar = ({
   const isEntrepreneur = user?.role === 'EMPRENDEDOR';
 
   const navItems = [
-    { id: 'portal', label: 'Inicio', icon: LayoutDashboard, adminOnly: false },
-    { id: 'business', label: 'Mi negocio', icon: BriefcaseBusiness, adminOnly: false },
-    { id: 'events', label: 'Ferias y eventos', icon: Compass, adminOnly: false },
-    { id: 'applications', label: 'Mis solicitudes', icon: TicketCheck, adminOnly: false },
-    { id: 'market-admin', label: 'Administración', icon: ClipboardList, adminOnly: true },
-    { id: 'dashboard', label: 'Panel comercial', icon: BarChart3, adminOnly: false, staffOnly: true },
-    { id: 'sales', label: 'Ventas', icon: ShoppingCart, adminOnly: false, staffOnly: true },
-    { id: 'products', label: 'Productos', icon: Package, adminOnly: false, staffOnly: true },
-    { id: 'inventory', label: 'Inventario', icon: Boxes, adminOnly: false, staffOnly: true },
-    { id: 'purchases', label: 'Compras', icon: Truck, adminOnly: true, staffOnly: true },
-    { id: 'suppliers', label: 'Proveedores', icon: Building2, adminOnly: false, staffOnly: true },
-    { id: 'cash', label: 'Caja', icon: Wallet, adminOnly: false, staffOnly: true },
-    { id: 'reports', label: 'Reportes', icon: BarChart3, adminOnly: true, staffOnly: true },
-    { id: 'users', label: 'Usuarios', icon: Users, adminOnly: true, staffOnly: true },
-    { id: 'config', label: 'Configuración', icon: Settings, adminOnly: false, staffOnly: true },
+    { id: 'portal', label: 'Inicio', icon: LayoutDashboard, adminOnly: false, section: 'portal' },
+    { id: 'business', label: 'Mi negocio', icon: BriefcaseBusiness, adminOnly: false, section: 'portal' },
+    { id: 'events', label: 'Ferias y eventos', icon: Compass, adminOnly: false, section: 'portal' },
+    { id: 'applications', label: 'Mis solicitudes', icon: TicketCheck, adminOnly: false, section: 'portal' },
+    { id: 'market-admin', label: 'Administrar ferias', icon: ClipboardList, adminOnly: true, section: 'portal' },
+    { id: 'dashboard', label: 'Panel comercial', icon: BarChart3, adminOnly: false, staffOnly: true, section: 'shop' },
+    { id: 'sales', label: 'Ventas', icon: ShoppingCart, adminOnly: false, staffOnly: true, section: 'shop' },
+    { id: 'products', label: 'Productos', icon: Package, adminOnly: false, staffOnly: true, section: 'shop' },
+    { id: 'inventory', label: 'Inventario', icon: Boxes, adminOnly: false, staffOnly: true, section: 'shop' },
+    { id: 'purchases', label: 'Compras', icon: Truck, adminOnly: true, staffOnly: true, section: 'shop' },
+    { id: 'suppliers', label: 'Proveedores', icon: Building2, adminOnly: false, staffOnly: true, section: 'shop' },
+    { id: 'cash', label: 'Caja', icon: Wallet, adminOnly: false, staffOnly: true, section: 'shop' },
+    { id: 'reports', label: 'Reportes', icon: PieChart, adminOnly: true, staffOnly: true, section: 'shop' },
+    { id: 'users', label: 'Usuarios', icon: Users, adminOnly: true, staffOnly: true, section: 'settings' },
+    { id: 'config', label: 'Configuración', icon: Settings, adminOnly: false, staffOnly: true, section: 'settings' },
   ];
+
+  const sectionLabels = {
+    portal: 'Portal Emprende',
+    shop: 'Gestión del comercio',
+    settings: 'Ajustes',
+  };
 
   const visibleItems = navItems.filter((item) => (!item.adminOnly || isAdmin) && (!item.staffOnly || !isEntrepreneur));
 
@@ -68,13 +74,11 @@ export const Sidebar = ({
       <aside className={`app-sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <div className="brand-icon-box">
-              <Store size={20} />
-            </div>
+            <span className="sidebar-brand-mark"><span /><span /></span>
             {!collapsed && (
               <div className="brand-text">
                 <span className="brand-title">Emprende</span>
-                <span className="brand-subtitle">Negocios y eventos</span>
+                <span className="brand-subtitle">Gestión del comercio</span>
               </div>
             )}
           </div>
@@ -88,12 +92,16 @@ export const Sidebar = ({
         </div>
 
         <nav className="sidebar-nav">
-          {visibleItems.map((item) => {
+          {visibleItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
+            const startsSection = index === 0 || visibleItems[index - 1].section !== item.section;
             return (
+              <React.Fragment key={item.id}>
+              {startsSection && (collapsed
+                ? index > 0 && <div className="sidebar-section-divider" />
+                : <div className="sidebar-section-label">{sectionLabels[item.section]}</div>)}
               <button
-                key={item.id}
                 className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
                 onClick={() => handleItemClick(item.id)}
                 title={collapsed ? item.label : undefined}
@@ -106,6 +114,7 @@ export const Sidebar = ({
                   <span className="sidebar-badge">{unreadNotifications}</span>
                 )}
               </button>
+              </React.Fragment>
             );
           })}
 

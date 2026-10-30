@@ -223,7 +223,7 @@ export const PurchasesPage = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <Truck size={24} className="text-primary" /> Gestión de Compras & Proveedores
+            <Truck size={24} className="text-primary" /> Compras a proveedores
           </h1>
           <p className="page-subtitle">
             Órdenes de adquisición de mercadería, recepción de stock y control de costos

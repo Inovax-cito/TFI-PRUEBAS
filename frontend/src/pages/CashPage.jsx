@@ -181,7 +181,7 @@ export const CashPage = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <Wallet size={24} className="text-primary" /> Control de Caja & Arqueo Diario
+            <Wallet size={24} className="text-primary" /> Caja diaria
           </h1>
           <p className="page-subtitle">
             Gestión de ingresos, egresos, saldos teóricos y conciliación de dinero contado
@@ -193,14 +193,14 @@ export const CashPage = () => {
             className={`btn ${activeTab === 'current' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('current')}
           >
-            <Wallet size={16} /> Turno Actual
+            <Wallet size={16} /> Turno actual
           </button>
           {isAdmin && (
             <button
               className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-secondary'}`}
               onClick={() => setActiveTab('history')}
             >
-              <History size={16} /> Historial de Turnos
+              <History size={16} /> Historial de turnos
             </button>
           )}
         </div>
@@ -225,7 +225,7 @@ export const CashPage = () => {
             className="card"
             style={{
               marginBottom: '20px',
-              borderLeft: `5px solid ${isOpen ? '#10b981' : '#ef4444'}`,
+              borderLeft: `5px solid ${isOpen ? 'var(--color-success)' : 'var(--color-danger)'}`,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
@@ -247,7 +247,7 @@ export const CashPage = () => {
 
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#0f172a' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--color-text-main)' }}>
                       Caja {isOpen ? 'Abierta y Operativa' : 'Cerrada'}
                     </h3>
                     <span className={`badge ${isOpen ? 'badge-success' : 'badge-danger'}`}>
@@ -276,10 +276,10 @@ export const CashPage = () => {
                 ) : (
                   <>
                     <button className="btn btn-secondary" onClick={() => setShowMovementModal(true)}>
-                      <PlusCircle size={16} /> Movimiento Manual
+                      <PlusCircle size={16} /> Movimiento manual
                     </button>
                     <button className="btn btn-danger" onClick={() => { setRealAmountCounted(''); setShowCloseModal(true); }}>
-                      <Lock size={16} /> Arqueo & Cierre de Caja
+                      <Lock size={16} /> Arqueo y cierre de caja
                     </button>
                   </>
                 )}
@@ -323,10 +323,10 @@ export const CashPage = () => {
                 </div>
               </div>
 
-              <div className="metric-card" style={{ borderColor: '#bfdbfe', background: '#f0f9ff' }}>
+              <div className="metric-card" style={{ borderColor: 'var(--color-primary-border)', background: 'var(--color-primary-light)' }}>
                 <div className="metric-content">
-                  <span className="metric-label" style={{ color: '#1e40af' }}>Saldo Teórico Esperado</span>
-                  <span className="metric-value" style={{ color: '#1d4ed8' }}>{formatCurrency(summary.theoreticalAmount)}</span>
+                  <span className="metric-label" style={{ color: 'var(--color-primary-hover)' }}>Saldo esperado en caja</span>
+                  <span className="metric-value" style={{ color: 'var(--color-primary)' }}>{formatCurrency(summary.theoreticalAmount)}</span>
                   <span className="metric-subtext">Debe haber físicamente en caja</span>
                 </div>
                 <div className="metric-icon-box icon-blue">
@@ -336,12 +336,12 @@ export const CashPage = () => {
             </div>
           )}
 
-          {/* Tabla de Movimientos del Turno Actual */}
+          {/* Tabla de Movimientos del turno actual */}
           {isOpen && (
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">
-                  <History size={18} className="text-primary" /> Movimientos del Turno Actual ({movements.length})
+                  <History size={18} className="text-primary" /> Movimientos del turno actual ({movements.length})
                 </h3>
                 <button className="btn btn-secondary btn-sm" onClick={fetchCurrentRegister}>
                   <RefreshCw size={14} /> Actualizar
@@ -377,7 +377,7 @@ export const CashPage = () => {
                             </span>
                           </td>
                           <td>
-                            <span className="badge badge-neutral">{m.category}</span>
+                            <span className="badge badge-neutral">{String(m.category).replace(/_/g, ' ')}</span>
                           </td>
                           <td><strong>{m.concept}</strong></td>
                           <td>
@@ -400,7 +400,7 @@ export const CashPage = () => {
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">
-              <History size={18} className="text-primary" /> Historial de Turnos de Caja (Aperturas y Cierres)
+              <History size={18} className="text-primary" /> Historial de turnos (aperturas y cierres)
             </h3>
             <button className="btn btn-secondary btn-sm" onClick={fetchCashHistory}>
               <RefreshCw size={14} /> Actualizar
@@ -454,7 +454,7 @@ export const CashPage = () => {
                         <td>{reg.realAmount ? formatCurrency(reg.realAmount) : '-'}</td>
                         <td>
                           {reg.status === 'CERRADA' ? (
-                            <span style={{ fontWeight: 700, color: isBalanced ? '#16a34a' : diff > 0 ? '#2563eb' : '#dc2626' }}>
+                            <span style={{ fontWeight: 700, color: isBalanced ? '#16a34a' : diff > 0 ? 'var(--color-primary)' : '#dc2626' }}>
                               {isBalanced ? 'Exacto ($0,00)' : diff > 0 ? `+${formatCurrency(diff)} (Sobrante)` : `${formatCurrency(diff)} (Faltante)`}
                             </span>
                           ) : (
@@ -611,8 +611,8 @@ export const CashPage = () => {
                     style={{
                       padding: '12px',
                       borderRadius: '8px',
-                      background: Math.abs(diffNum) < 0.01 ? '#ecfdf5' : diffNum > 0 ? '#eff6ff' : '#fef2f2',
-                      border: `1px solid ${Math.abs(diffNum) < 0.01 ? '#a7f3d0' : diffNum > 0 ? '#bfdbfe' : '#fecaca'}`,
+                      background: Math.abs(diffNum) < 0.01 ? '#ecfdf5' : diffNum > 0 ? 'var(--color-primary-light)' : '#fef2f2',
+                      border: `1px solid ${Math.abs(diffNum) < 0.01 ? '#a7f3d0' : diffNum > 0 ? 'var(--color-primary-border)' : '#fecaca'}`,
                       marginBottom: '14px',
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -620,7 +620,7 @@ export const CashPage = () => {
                     }}
                   >
                     <span style={{ fontWeight: 600 }}>Diferencia de Caja:</span>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: Math.abs(diffNum) < 0.01 ? '#065f46' : diffNum > 0 ? '#1e40af' : '#991b1b' }}>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: Math.abs(diffNum) < 0.01 ? '#065f46' : diffNum > 0 ? 'var(--color-primary-hover)' : '#991b1b' }}>
                       {Math.abs(diffNum) < 0.01
                         ? 'Exacto ($0,00)'
                         : diffNum > 0
@@ -661,7 +661,7 @@ export const CashPage = () => {
           <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '460px' }}>
             <div className="modal-header">
               <h2 className="modal-title">
-                <DollarSign size={20} className="text-primary" /> Registrar Movimiento Manual
+                <DollarSign size={20} className="text-primary" /> Registrar movimiento manual
               </h2>
               <button className="modal-close-btn" onClick={() => setShowMovementModal(false)}>
                 <X size={20} />

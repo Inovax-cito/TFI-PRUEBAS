@@ -14,19 +14,14 @@ import {
 } from 'lucide-react';
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from 'recharts';
 import { apiRequest } from '../utils/api.js';
 import { formatCurrency, formatDate } from '../utils/formatters.js';
+import { CHART, TOOLTIP_STYLE, shortMoney } from '../utils/chartTheme.js';
 
 export const ReportsPage = () => {
   const [reportType, setReportType] = useState('sales'); // 'sales' | 'financial' | 'inventory'
@@ -109,14 +104,15 @@ export const ReportsPage = () => {
     window.print();
   };
 
-  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'];
+  const paymentBreakdown = salesReport?.paymentBreakdown || [];
+  const paymentTotal = paymentBreakdown.reduce((sum, pm) => sum + Number(pm.amount || 0), 0);
 
   return (
     <div>
       <div className="page-header no-print">
         <div className="page-title-group">
           <h1>
-            <BarChart3 size={24} className="text-primary" /> Reportes & Estadísticas Financieras
+            <BarChart3 size={24} className="text-primary" /> Reportes
           </h1>
           <p className="page-subtitle">
             Análisis de ventas, márgenes reales de rentabilidad y valuación de existencias
@@ -141,19 +137,19 @@ export const ReportsPage = () => {
               className={`btn ${reportType === 'sales' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
               onClick={() => setReportType('sales')}
             >
-              <TrendingUp size={15} /> Reporte de Ventas
+              <TrendingUp size={15} /> Ventas
             </button>
             <button
               className={`btn ${reportType === 'financial' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
               onClick={() => setReportType('financial')}
             >
-              <DollarSign size={15} /> Estado Económico y Ganancias
+              <DollarSign size={15} /> Ganancias
             </button>
             <button
               className={`btn ${reportType === 'inventory' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
               onClick={() => setReportType('inventory')}
             >
-              <Boxes size={15} /> Valuación de Inventario
+              <Boxes size={15} /> Inventario
             </button>
           </div>
 
@@ -166,7 +162,7 @@ export const ReportsPage = () => {
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
-              <span style={{ fontSize: '0.8rem', color: '#64748b' }}>hasta</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>hasta</span>
               <input
                 type="date"
                 className="form-input"
@@ -245,58 +241,59 @@ export const ReportsPage = () => {
             </div>
 
             {/* Desglose por método de pago */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-              <div className="card">
-                <div className="card-header">
-                  <h3 className="card-title">
-                    <PieChartIcon size={18} className="text-primary" /> Ventas por Método de Pago
-                  </h3>
-                </div>
-                <div style={{ width: '100%', height: 240 }}>
-                  <ResponsiveContainer>
-                    <PieChart>
-                      <Pie
-                        data={salesReport?.paymentBreakdown || []}
-                        dataKey="amount"
-                        nameKey="method"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {salesReport?.paymentBreakdown?.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value) => formatCurrency(value)} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
+            <div className="card" style={{ marginBottom: '24px' }}>
+              <div className="card-header">
+                <h3 className="card-title">
+                  <PieChartIcon size={18} className="text-primary" /> ¿Cómo pagaron los clientes?
+                </h3>
               </div>
-
-              <div className="card">
-                <div className="card-header">
-                  <h3 className="card-title">Distribución de Cobranzas</h3>
+              <p className="chart-help">Reparto del total vendido según el medio de pago. Los porcentajes suman 100%.</p>
+              {paymentBreakdown.length === 0 ? (
+                <div className="chart-empty" style={{ height: 200 }}>
+                  <PieChartIcon size={22} />
+                  <strong>No hay ventas en el período elegido</strong>
+                  <span>Probá ampliar las fechas o limpiar el filtro.</span>
                 </div>
-                <div className="table-responsive">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>MÉTODO DE PAGO</th>
-                        <th style={{ textAlign: 'right' }}>TOTAL RECAUDADO</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {salesReport?.paymentBreakdown?.map((pm) => (
-                        <tr key={pm.method}>
-                          <td><strong>{pm.method}</strong></td>
-                          <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatCurrency(pm.amount)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              ) : (
+                <div className="chart-split">
+                  <div style={{ width: '100%', height: 220, position: 'relative' }}>
+                    <ResponsiveContainer>
+                      <PieChart>
+                        <Pie
+                          data={paymentBreakdown}
+                          dataKey="amount"
+                          nameKey="method"
+                          innerRadius={62}
+                          outerRadius={96}
+                          paddingAngle={2}
+                          stroke="none"
+                        >
+                          {paymentBreakdown.map((entry, index) => (
+                            <Cell key={entry.method} fill={CHART.series[index % CHART.series.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={TOOLTIP_STYLE} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="chart-donut-center">
+                      <small>Total</small>
+                      <strong>{shortMoney(paymentTotal)}</strong>
+                    </div>
+                  </div>
+                  <div className="chart-legend">
+                    {paymentBreakdown.map((pm, index) => (
+                      <div className="chart-legend-row" key={pm.method}>
+                        <span className="chart-legend-dot" style={{ background: CHART.series[index % CHART.series.length] }} />
+                        <span>{pm.method}</span>
+                        <span className="chart-legend-value">
+                          {formatCurrency(pm.amount)}
+                          <small>{paymentTotal ? Math.round((Number(pm.amount) / paymentTotal) * 100) : 0}%</small>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}
@@ -358,7 +355,7 @@ export const ReportsPage = () => {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">
-                  <DollarSign size={18} className="text-primary" /> Cuadro de Conciliación de Rentabilidad
+                  <DollarSign size={18} className="text-primary" /> Cómo se calcula la ganancia
                 </h3>
               </div>
               <div style={{ maxWidth: '600px', margin: '0 auto', padding: '10px 0' }}>
@@ -382,7 +379,7 @@ export const ReportsPage = () => {
                   <span>(+) Otros Ingresos Extraordinarios de Caja:</span>
                   <strong>+{formatCurrency(financialReport?.otherIncomes)}</strong>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderTop: '2px solid #0f172a', fontSize: '1.25rem', fontWeight: 800 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderTop: '2px solid var(--color-text-main)', fontSize: '1.25rem', fontWeight: 800 }}>
                   <span>(=) GANANCIA NETA ESTIMADA:</span>
                   <span className="text-success">{formatCurrency(financialReport?.netEstimatedProfit)}</span>
                 </div>
@@ -444,7 +441,7 @@ export const ReportsPage = () => {
 
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Inventario Valorizado al Día de Hoy</h3>
+                <h3 className="card-title">Inventario valorizado al día de hoy</h3>
               </div>
               <div className="table-responsive">
                 <table className="data-table">

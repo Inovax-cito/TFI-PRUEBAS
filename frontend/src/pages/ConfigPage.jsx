@@ -180,7 +180,7 @@ export const ConfigPage = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <Settings size={24} className="text-primary" /> Configuración del Sistema
+            <Settings size={24} className="text-primary" /> Configuración
           </h1>
           <p className="page-subtitle">
             Parámetros del comercio, métodos de pago, categorías de productos y preferencias
@@ -214,7 +214,7 @@ export const ConfigPage = () => {
         <div className="card" style={{ maxWidth: '800px' }}>
           <div className="card-header">
             <h3 className="card-title">
-              <Store size={18} className="text-primary" /> Información Comercial del Negocio
+              <Store size={18} className="text-primary" /> Datos del negocio
             </h3>
           </div>
 
@@ -348,7 +348,7 @@ export const ConfigPage = () => {
           <div className="card">
             <div className="card-header">
               <h3 className="card-title">
-                <CreditCard size={18} className="text-primary" /> Medios de Cobro Habilitados
+                <CreditCard size={18} className="text-primary" /> Medios de cobro habilitados
               </h3>
             </div>
 
@@ -426,7 +426,7 @@ export const ConfigPage = () => {
           <div className="card">
             <div className="card-header">
               <h3 className="card-title">
-                <Tags size={18} className="text-primary" /> Categorías de Productos
+                <Tags size={18} className="text-primary" /> Categorías de productos
               </h3>
             </div>
 

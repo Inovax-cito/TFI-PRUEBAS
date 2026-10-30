@@ -328,7 +328,7 @@ const KIOSCO_DEFAULT_PAYMENT_METHODS = [
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <ShoppingCart size={24} className="text-primary" /> Gestión de Ventas
+            <ShoppingCart size={24} className="text-primary" /> Ventas
           </h1>
           <p className="page-subtitle">
             Punto de Venta ágil, emisión de comprobantes y registro de operaciones
@@ -340,13 +340,13 @@ const KIOSCO_DEFAULT_PAYMENT_METHODS = [
             className={`btn ${activeTab === 'pos' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('pos')}
           >
-            <ShoppingCart size={16} /> Punto de Venta (POS)
+            <ShoppingCart size={16} /> Punto de venta
           </button>
           <button
             className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('history')}
           >
-            <History size={16} /> Historial de Ventas
+            <History size={16} /> Historial de ventas
           </button>
         </div>
       </div>
@@ -402,14 +402,14 @@ const KIOSCO_DEFAULT_PAYMENT_METHODS = [
                       transition: 'all 0.15s ease',
                       boxShadow: 'var(--shadow-xs)',
                     }}
-                    onMouseEnter={(e) => !isOutOfStock && (e.currentTarget.style.borderColor = '#2563eb')}
+                    onMouseEnter={(e) => !isOutOfStock && (e.currentTarget.style.borderColor = 'var(--color-primary)')}
                     onMouseLeave={(e) => !isOutOfStock && (e.currentTarget.style.borderColor = '#cbd5e1')}
                   >
                     <div>
                       <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '2px', fontFamily: 'monospace' }}>
                         {p.sku}
                       </div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a', lineHeight: 1.25, marginBottom: '6px' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--color-text-main)', lineHeight: 1.25, marginBottom: '6px' }}>
                         {p.name}
                       </div>
                     </div>
@@ -474,7 +474,7 @@ const KIOSCO_DEFAULT_PAYMENT_METHODS = [
                     }}
                   >
                     <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.name}
                       </div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
@@ -602,7 +602,7 @@ const KIOSCO_DEFAULT_PAYMENT_METHODS = [
                   </>
                 ) : (
                   <>
-                    <Check size={20} /> Confirmar & Cobrar Venta
+                    <Check size={20} /> Confirmar y cobrar
                   </>
                 )}
               </button>

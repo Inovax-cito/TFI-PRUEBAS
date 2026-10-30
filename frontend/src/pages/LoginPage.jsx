@@ -82,7 +82,7 @@ export const LoginPage = () => {
           >
             <Store size={28} />
           </div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-text-main)', margin: '0 0 6px 0' }}>
             Emprende
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>

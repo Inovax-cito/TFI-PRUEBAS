@@ -152,7 +152,7 @@ export const UsersPage = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <Users size={24} className="text-primary" /> Administración de Usuarios & Permisos
+            <Users size={24} className="text-primary" /> Usuarios y permisos
           </h1>
           <p className="page-subtitle">
             Control de cuentas, asignación de roles (Administrador / Empleado) y seguridad
@@ -232,7 +232,7 @@ export const UsersPage = () => {
                       <td>
                         <strong>{u.username}</strong>
                         {isCurrent && (
-                          <span style={{ fontSize: '0.7rem', color: '#2563eb', marginLeft: '6px' }}>(Tú)</span>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--color-primary)', marginLeft: '6px' }}>(Tú)</span>
                         )}
                       </td>
                       <td>{u.name} {u.lastName}</td>

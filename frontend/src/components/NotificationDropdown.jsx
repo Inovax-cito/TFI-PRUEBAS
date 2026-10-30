@@ -97,11 +97,11 @@ export const NotificationDropdown = ({ isOpen, onClose, onRefreshCount }) => {
               <div style={{ marginTop: '2px' }}>{getIcon(item.type)}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <span style={{ fontWeight: item.read ? 500 : 700, fontSize: '0.82rem', color: '#0f172a' }}>
+                  <span style={{ fontWeight: item.read ? 500 : 700, fontSize: '0.82rem', color: 'var(--color-text-main)' }}>
                     {item.title}
                   </span>
                   {!item.read && (
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#2563eb' }} />
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-primary)' }} />
                   )}
                 </div>
                 <p style={{ margin: '4px 0 0 0', fontSize: '0.78rem', color: '#475569', lineHeight: 1.3 }}>

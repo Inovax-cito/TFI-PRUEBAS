@@ -15,8 +15,6 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import {
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -24,9 +22,11 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  LabelList,
 } from 'recharts';
 import { apiRequest } from '../utils/api.js';
 import { formatCurrency, formatDateTime } from '../utils/formatters.js';
+import { CHART, TOOLTIP_STYLE, shortMoney } from '../utils/chartTheme.js';
 
 const KIOSCO_FALLBACK_DASHBOARD = {
   cards: {
@@ -147,6 +147,9 @@ export const DashboardPage = ({ setActiveTab }) => {
   }
 
   const { cards, charts, recentActivity } = data || {};
+  const last7Days = charts?.last7Days || [];
+  const topProducts = charts?.topProducts || [];
+  const weekTotal = last7Days.reduce((sum, day) => sum + Number(day.total || 0), 0);
 
   return (
     <div>
@@ -154,7 +157,7 @@ export const DashboardPage = ({ setActiveTab }) => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <TrendingUp size={24} className="text-primary" /> Panel de Control Comercial
+            <TrendingUp size={24} className="text-primary" /> Panel comercial
           </h1>
           <p className="page-subtitle">
             Resumen en vivo del estado económico, inventario y flujo de caja
@@ -165,7 +168,7 @@ export const DashboardPage = ({ setActiveTab }) => {
             <RefreshCw size={16} /> Actualizar
           </button>
           <button className="btn btn-primary" onClick={() => setActiveTab('sales')}>
-            <ShoppingCart size={16} /> Nueva Venta
+            <ShoppingCart size={16} /> Nueva venta
           </button>
         </div>
       </div>
@@ -175,7 +178,7 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 1. Ventas del día */}
         <div className="metric-card">
           <div className="metric-content">
-            <span className="metric-label">Ventas del Día</span>
+            <span className="metric-label">Ventas de hoy</span>
             <span className="metric-value">{formatCurrency(cards?.salesTodayTotal)}</span>
             <span className="metric-subtext">
               <CheckCircle size={13} className="text-success" /> {cards?.salesTodayCount || 0} operaciones concretadas
@@ -189,7 +192,7 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 2. Ingresos del día */}
         <div className="metric-card">
           <div className="metric-content">
-            <span className="metric-label">Ingresos de Caja Hoy</span>
+            <span className="metric-label">Ingresos de caja hoy</span>
             <span className="metric-value text-success">{formatCurrency(cards?.todayIncomes)}</span>
             <span className="metric-subtext">
               <ArrowUpRight size={13} className="text-success" /> Cobranzas en efectivo
@@ -203,7 +206,7 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 3. Egresos del día */}
         <div className="metric-card">
           <div className="metric-content">
-            <span className="metric-label">Egresos de Caja Hoy</span>
+            <span className="metric-label">Egresos de caja hoy</span>
             <span className="metric-value text-danger">{formatCurrency(cards?.todayExpenses)}</span>
             <span className="metric-subtext">
               <ArrowDownRight size={13} className="text-danger" /> Pagos y retiros
@@ -217,8 +220,8 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 4. Ganancia estimada */}
         <div className="metric-card">
           <div className="metric-content">
-            <span className="metric-label">Ganancia Bruta Hoy</span>
-            <span className="metric-value" style={{ color: cards?.estimatedProfitToday >= 0 ? '#10b981' : '#ef4444' }}>
+            <span className="metric-label">Ganancia bruta hoy</span>
+            <span className="metric-value" style={{ color: cards?.estimatedProfitToday >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
               {formatCurrency(cards?.estimatedProfitToday)}
             </span>
             <span className="metric-subtext">
@@ -233,7 +236,7 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 5. Cantidad de productos */}
         <div className="metric-card">
           <div className="metric-content">
-            <span className="metric-label">Productos Activos</span>
+            <span className="metric-label">Productos activos</span>
             <span className="metric-value">{cards?.totalProducts || 0}</span>
             <span className="metric-subtext" style={{ cursor: 'pointer', color: 'var(--color-primary)' }} onClick={() => setActiveTab('products')}>
               Ver catálogo completo &rarr;
@@ -247,8 +250,8 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 6. Productos con stock bajo */}
         <div className="metric-card" style={{ borderColor: cards?.lowStockCount > 0 ? '#fde68a' : undefined }}>
           <div className="metric-content">
-            <span className="metric-label">Stock en Alerta</span>
-            <span className="metric-value" style={{ color: cards?.lowStockCount > 0 ? '#d97706' : '#1e293b' }}>
+            <span className="metric-label">Stock bajo</span>
+            <span className="metric-value" style={{ color: cards?.lowStockCount > 0 ? 'var(--color-warning)' : 'var(--color-text-main)' }}>
               {cards?.lowStockCount || 0}
             </span>
             <span className="metric-subtext" style={{ color: cards?.lowStockCount > 0 ? '#d97706' : undefined, cursor: 'pointer' }} onClick={() => setActiveTab('inventory')}>
@@ -263,7 +266,7 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 7. Compras pendientes */}
         <div className="metric-card">
           <div className="metric-content">
-            <span className="metric-label">Compras Pendientes</span>
+            <span className="metric-label">Compras pendientes</span>
             <span className="metric-value">{cards?.pendingPurchasesCount || 0}</span>
             <span className="metric-subtext" style={{ cursor: 'pointer', color: 'var(--color-primary)' }} onClick={() => setActiveTab('purchases')}>
               Por recibir mercadería &rarr;
@@ -277,7 +280,7 @@ export const DashboardPage = ({ setActiveTab }) => {
         {/* 8. Estado actual de la caja */}
         <div className="metric-card">
           <div className="metric-content">
-            <span className="metric-label">Estado de Caja</span>
+            <span className="metric-label">Estado de la caja</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
               <span className={`badge ${cards?.cashStatus?.isOpen ? 'badge-success' : 'badge-danger'}`}>
                 {cards?.cashStatus?.isOpen ? 'ABIERTA' : 'CERRADA'}
@@ -296,40 +299,49 @@ export const DashboardPage = ({ setActiveTab }) => {
         </div>
       </div>
 
-      {/* Sección de Gráficos Interactivos */}
+      {/* Sección de Gráficos */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '20px', marginBottom: '24px' }}>
         {/* Gráfico 1: Ventas últimos 7 días */}
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">
-              <TrendingUp size={18} className="text-primary" /> Evolución de Ventas (Últimos 7 Días)
+              <TrendingUp size={18} className="text-primary" /> Ventas de los últimos 7 días
             </h3>
           </div>
-          <div style={{ width: '100%', height: 260 }}>
-            <ResponsiveContainer>
-              <AreaChart data={charts?.last7Days || []} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="label" stroke="#94a3b8" fontSize={12} tickLine={false} />
-                <YAxis
-                  stroke="#94a3b8"
-                  fontSize={12}
-                  tickLine={false}
-                  tickFormatter={(val) => `$${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`}
-                />
-                <Tooltip
-                  formatter={(value) => [formatCurrency(value), 'Total Vendido']}
-                  labelFormatter={(label) => `Fecha: ${label}`}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}
-                />
-                <Area type="monotone" dataKey="total" stroke="#2563eb" strokeWidth={2.5} fillOpacity={1} fill="url(#colorSales)" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <p className="chart-help">
+            Cada barra es el total cobrado en un día. Total de la semana: <strong>{formatCurrency(weekTotal)}</strong>
+          </p>
+          <div style={{ width: '100%', height: 250 }}>
+            {weekTotal === 0 ? (
+              <div className="chart-empty">
+                <TrendingUp size={22} />
+                <strong>Sin ventas en los últimos 7 días</strong>
+                <span>Cuando registres ventas desde “Ventas”, vas a ver acá cuánto se vendió cada día.</span>
+              </div>
+            ) : (
+              <ResponsiveContainer>
+                <BarChart data={last7Days} margin={{ top: 22, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid vertical={false} stroke={CHART.grid} />
+                  <XAxis dataKey="label" stroke={CHART.axis} fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis
+                    stroke={CHART.axis}
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    width={48}
+                    tickFormatter={shortMoney}
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'rgba(0, 140, 145, 0.06)' }}
+                    formatter={(value, _name, item) => [`${formatCurrency(value)} (${item.payload.count || 0} ventas)`, 'Vendido']}
+                    contentStyle={TOOLTIP_STYLE}
+                  />
+                  <Bar dataKey="total" fill={CHART.primary} radius={[6, 6, 0, 0]} maxBarSize={44}>
+                    <LabelList dataKey="total" position="top" formatter={(v) => (v > 0 ? shortMoney(v) : '')} fontSize={11} fill={CHART.label} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -337,33 +349,39 @@ export const DashboardPage = ({ setActiveTab }) => {
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">
-              <Package size={18} className="text-primary" /> Productos Más Vendidos (Unidades)
+              <Package size={18} className="text-primary" /> Productos más vendidos
             </h3>
           </div>
-          <div style={{ width: '100%', height: 260 }}>
-            {charts?.topProducts?.length === 0 ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8', fontSize: '0.9rem' }}>
-                No hay ventas registradas para graficar productos.
+          <p className="chart-help">Los 5 productos con más unidades vendidas. El número indica cuántas unidades salieron.</p>
+          <div style={{ width: '100%', height: 250 }}>
+            {topProducts.length === 0 ? (
+              <div className="chart-empty">
+                <Package size={22} />
+                <strong>Todavía no hay productos vendidos</strong>
+                <span>El ranking se arma automáticamente con cada venta.</span>
               </div>
             ) : (
               <ResponsiveContainer>
-                <BarChart data={charts?.topProducts || []} layout="vertical" margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                  <XAxis type="number" stroke="#94a3b8" fontSize={12} tickLine={false} />
+                <BarChart data={topProducts} layout="vertical" margin={{ top: 0, right: 48, left: 0, bottom: 0 }}>
+                  <XAxis type="number" hide />
                   <YAxis
                     type="category"
                     dataKey="name"
-                    stroke="#475569"
-                    fontSize={11}
+                    stroke={CHART.label}
+                    fontSize={12}
                     tickLine={false}
-                    width={130}
-                    tickFormatter={(val) => (val.length > 18 ? `${val.substring(0, 16)}...` : val)}
+                    axisLine={false}
+                    width={200}
+                    tickFormatter={(val) => (val.length > 28 ? `${val.substring(0, 27)}…` : val)}
                   />
                   <Tooltip
-                    formatter={(value) => [`${value} unidades`, 'Cantidad']}
-                    contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                    cursor={{ fill: 'rgba(0, 140, 145, 0.06)' }}
+                    formatter={(value, _name, item) => [`${value} unidades · ${formatCurrency(item.payload.total)}`, 'Vendido']}
+                    contentStyle={TOOLTIP_STYLE}
                   />
-                  <Bar dataKey="quantity" fill="#10b981" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="quantity" fill={CHART.primary} radius={[0, 6, 6, 0]} barSize={22}>
+                    <LabelList dataKey="quantity" position="right" formatter={(v) => `${v} u.`} fontSize={12} fontWeight={700} fill={CHART.label} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -375,7 +393,7 @@ export const DashboardPage = ({ setActiveTab }) => {
       <div className="card">
         <div className="card-header">
           <h3 className="card-title">
-            <Clock size={18} className="text-primary" /> Actividad Reciente del Sistema
+            <Clock size={18} className="text-primary" /> Actividad reciente
           </h3>
           <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
             Últimas operaciones comerciales registradas

@@ -126,7 +126,7 @@ export const SuppliersPage = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h1>
-            <Building2 size={24} className="text-primary" /> Directorio de Proveedores
+            <Building2 size={24} className="text-primary" /> Proveedores
           </h1>
           <p className="page-subtitle">
             Administración de empresas distribuidoras, contactos y condiciones de compra
@@ -202,7 +202,7 @@ export const SuppliersPage = () => {
                 suppliers.map((s) => (
                   <tr key={s.id}>
                     <td>
-                      <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.name}</div>
+                      <div style={{ fontWeight: 700, color: 'var(--color-text-main)' }}>{s.name}</div>
                       {s.notes && (
                         <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{s.notes}</div>
                       )}

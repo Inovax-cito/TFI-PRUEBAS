@@ -25,7 +25,7 @@ export function AppContent() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0f172a', color: '#ffffff', gap: '16px' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg-sidebar)', color: '#ffffff', gap: '16px' }}>
         <div className="spinner-primary" style={{ width: '40px', height: '40px', borderWidth: '4px' }} />
         <span style={{ fontSize: '1rem', fontWeight: 600, color: '#94a3b8' }}>
           Iniciando Emprende…
