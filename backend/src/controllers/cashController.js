@@ -103,6 +103,7 @@ export const openRegister = async (req, res) => {
       await tx.notification.create({
         data: {
           type: 'OPERACION_IMPORTANTE',
+          link: '#tab:cash',
           title: 'Apertura de Caja realizada',
           description: `El usuario ${req.user.name} abrió la caja con un saldo inicial de $${initAmt.toLocaleString('es-AR')}.`,
         },
@@ -179,6 +180,7 @@ export const closeRegister = async (req, res) => {
         await tx.notification.create({
           data: {
             type: 'DIFERENCIA_CAJA',
+            link: '#tab:cash',
             title: `Diferencia en Cierre de Caja (${diffText})`,
             description: `Teórico esperado: $${theoretical.toFixed(2)} | Contado real: $${counted.toFixed(2)} | Responsable: ${req.user.name} ${req.user.lastName}`,
           },

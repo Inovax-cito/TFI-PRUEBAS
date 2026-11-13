@@ -106,6 +106,9 @@ export const updateUser = async (req, res) => {
     const { name, lastName, username, email, role, status, password } = req.body;
 
     const userId = parseInt(id, 10);
+    if (role && !['ADMINISTRADOR', 'EMPLEADO', 'EMPRENDEDOR', 'ORGANIZADOR'].includes(role)) {
+      return res.status(400).json({ message: 'Rol no válido.' });
+    }
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado.' });
@@ -127,7 +130,7 @@ export const updateUser = async (req, res) => {
       ...(lastName && { lastName: lastName.trim() }),
       ...(username && { username: username.trim() }),
       ...(email && { email: email.trim().toLowerCase() }),
-      ...(role && { role }),
+      ...(role && { role, onboardingCompleted: true }),
       ...(status !== undefined && { status: Boolean(status) }),
     };
 

@@ -224,6 +224,7 @@ export const createPurchase = async (req, res) => {
         await tx.notification.create({
           data: {
             type: 'COMPRA_PENDIENTE',
+            link: '#tab:purchases',
             title: `Nueva compra pendiente: ${purchaseNumber}`,
             description: `Se registró orden de compra a ${supplier.name} por $${total}. Pendiente de recepción.`,
           },
@@ -325,6 +326,7 @@ export const receivePurchase = async (req, res) => {
       await tx.notification.create({
         data: {
           type: 'OPERACION_IMPORTANTE',
+          link: '#tab:purchases',
           title: `Mercadería recibida: Compra ${purchase.purchaseNumber}`,
           description: `Se incorporó al stock la mercadería proveniente de ${purchase.supplier.name}.`,
         },

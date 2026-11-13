@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Store, Eye, EyeOff, Lock, User, AlertCircle, ArrowRight, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { apiRequest } from '../utils/api.js';
+import { GoogleSignInButton } from '../components/GoogleSignInButton.jsx';
+import { RoleChoice } from '../components/portal/RoleChoice.jsx';
+import './PortalExtras.css';
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -12,11 +15,12 @@ export const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [registering, setRegistering] = useState(false);
-  const [registration, setRegistration] = useState({ name: '', lastName: '', username: '', email: '' });
+  const [registration, setRegistration] = useState({ name: '', lastName: '', username: '', email: '', role: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    if (registering && !registration.role) { setError('Elegí si sos emprendedor/a o si administrás un espacio.'); return; }
     setLoading(true);
 
     try {
@@ -86,7 +90,7 @@ export const LoginPage = () => {
             Emprende
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
-            Ferias, eventos y oportunidades en Banda del Río Salí, Cruz Alta y Alderetes
+            Ferias, eventos y espacios verificados para emprender
           </p>
         </div>
 
@@ -114,6 +118,7 @@ export const LoginPage = () => {
 
           <form onSubmit={handleSubmit}>
             {registering && <>
+              <div className="form-group"><label className="form-label">¿Cómo vas a usar Emprende?</label><RoleChoice compact value={registration.role} onChange={(role) => setRegistration({ ...registration, role })} /></div>
               <div className="form-group"><label className="form-label">Nombre</label><input className="form-input" required maxLength={80} value={registration.name} onChange={(e) => setRegistration({ ...registration, name: e.target.value })} autoComplete="given-name" /></div>
               <div className="form-group"><label className="form-label">Apellido</label><input className="form-input" required maxLength={80} value={registration.lastName} onChange={(e) => setRegistration({ ...registration, lastName: e.target.value })} autoComplete="family-name" /></div>
               <div className="form-group"><label className="form-label"><User size={15} /> Nombre de usuario</label><input className="form-input" required minLength={3} maxLength={30} pattern="[A-Za-z0-9._-]+" value={registration.username} onChange={(e) => setRegistration({ ...registration, username: e.target.value })} autoComplete="username" /></div>
@@ -189,11 +194,17 @@ export const LoginPage = () => {
             </button>
           </form>
 
+          <GoogleSignInButton
+            text={registering ? 'signup_with' : 'signin_with'}
+            onSuccess={login}
+            onError={setError}
+          />
+
           <div style={{ marginTop: '20px', textAlign: 'center', color: '#64748b', fontSize: '.82rem' }}>
             {registering ? '¿Ya tenés cuenta?' : '¿Primera vez en la plataforma?'}{' '}
             <button type="button" onClick={changeMode} style={{ border: 0, background: 'none', color: '#176a4a', fontWeight: 700, cursor: 'pointer' }}>{registering ? 'Iniciar sesión' : 'Crear cuenta'}</button>
           </div>
-          {registering && <p style={{ marginTop: 12, textAlign: 'center', color: '#7a8a80', fontSize: '.7rem', lineHeight: 1.45 }}>La cuenta nueva tiene permisos de emprendedor. La revisión de postulaciones queda a cargo de un administrador.</p>}
+          {registering && <p style={{ marginTop: 12, textAlign: 'center', color: '#7a8a80', fontSize: '.7rem', lineHeight: 1.45 }}>Si te registrás con Google, te preguntamos el tipo de cuenta al entrar por primera vez.</p>}
         </div>
 
 

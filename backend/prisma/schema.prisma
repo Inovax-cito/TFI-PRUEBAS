@@ -11,6 +11,96 @@ enum Role {
   ADMINISTRADOR
   EMPLEADO
   EMPRENDEDOR
+  ORGANIZADOR
+}
+
+// Espacios propuestos por organizadores y su verificación legal
+enum SpaceStatus {
+  PENDIENTE
+  VERIFICADO
+  RECHAZADO
+  SUSPENDIDO
+}
+
+enum SpaceType {
+  GALERIA
+  LOCAL_COMERCIAL
+  CENTRO_CULTURAL
+  SALON_EVENTOS
+  PREDIO_PRIVADO
+  ESPACIO_PUBLICO
+  OTRO
+}
+
+// Con qué derecho el organizador dispone del espacio
+enum SpaceTenure {
+  PROPIETARIO
+  LOCATARIO
+  PERMISO_MUNICIPAL
+  CONCESION
+  AUTORIZACION_TITULAR
+}
+
+enum SpaceDocumentKind {
+  TITULO_PROPIEDAD
+  CONTRATO_ALQUILER
+  PERMISO_MUNICIPAL
+  HABILITACION_COMERCIAL
+  CONSTANCIA_CUIT
+  AUTORIZACION_TITULAR
+  OTRO
+}
+
+enum UploadPurpose {
+  SPACE_DOCUMENT
+  BUSINESS_PHOTO
+  PRODUCT_PHOTO
+  SPACE_PHOTO
+  PAYMENT_RECEIPT
+}
+
+// Pago del puesto. Hoy es una simulación: no se procesa dinero real.
+enum PaymentStatus {
+  NO_APLICA
+  PENDIENTE
+  INFORMADO
+  CONFIRMADO
+  RECHAZADO
+}
+
+enum MessageKind {
+  USUARIO
+  AUTOMATICO
+}
+
+enum ReviewDirection {
+  ORGANIZADOR_A_EMPRENDEDOR
+  EMPRENDEDOR_A_ORGANIZADOR
+}
+
+enum CashDayStatus {
+  ABIERTA
+  CERRADA
+}
+
+enum ReportStatus {
+  ABIERTA
+  RESUELTA
+  DESCARTADA
+}
+
+enum ReportTarget {
+  CONVOCATORIA
+  CONVERSACION
+  ESPACIO
+  USUARIO
+}
+
+enum OrderStatus {
+  PENDIENTE
+  CONFIRMADO
+  ENTREGADO
+  CANCELADO
 }
 
 enum MovementType {
@@ -60,31 +150,43 @@ enum ApplicationStatus {
   APROBADA
   NO_SELECCIONADA
   CANCELADA
+  LISTA_ESPERA
 }
 
 model User {
-  id                 Int                 @id @default(autoincrement())
-  name               String
-  lastName           String
-  username           String              @unique
-  email              String              @unique
-  password           String
-  role               Role                @default(EMPLEADO)
-  status             Boolean             @default(true)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  sales              Sale[]
-  purchases          Purchase[]
-  inventoryMovements InventoryMovement[]
-  priceHistories     PriceHistory[]
-  cashMovements      CashMovement[]
-  openedRegisters    CashRegister[]      @relation("OpenedRegisters")
-  closedRegisters    CashRegister[]      @relation("ClosedRegisters")
-  cancelledSales     Sale[]              @relation("CancelledSales")
-  businessProfile    BusinessProfile?
-  organizedEvents    MarketEvent[]        @relation("EventOrganizer")
-  eventApplications EventApplication[]   @relation("Applicant")
-  userNotifications Notification[]
+  id                  Int                 @id @default(autoincrement())
+  name                String
+  lastName            String
+  username            String              @unique
+  email               String              @unique
+  password            String?
+  googleId            String?             @unique
+  role                Role                @default(EMPLEADO)
+  status              Boolean             @default(true)
+  onboardingCompleted Boolean             @default(true)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  sales               Sale[]
+  purchases           Purchase[]
+  inventoryMovements  InventoryMovement[]
+  priceHistories      PriceHistory[]
+  cashMovements       CashMovement[]
+  openedRegisters     CashRegister[]      @relation("OpenedRegisters")
+  closedRegisters     CashRegister[]      @relation("ClosedRegisters")
+  cancelledSales      Sale[]              @relation("CancelledSales")
+  businessProfile     BusinessProfile?
+  organizedEvents     MarketEvent[]       @relation("EventOrganizer")
+  eventApplications   EventApplication[]  @relation("Applicant")
+  userNotifications   Notification[]
+  spaces              Space[]             @relation("SpaceOwner")
+  reviewedSpaces      Space[]             @relation("SpaceReviewer")
+  uploads             Upload[]
+
+  reportsMade     Report[]             @relation("ReportAuthor")
+  reportsResolved Report[]             @relation("ReportResolver")
+  sentMessages    ApplicationMessage[]
+  reviewsWritten  Review[]             @relation("ReviewAuthor")
+  reviewsReceived Review[]             @relation("ReviewTarget")
 
   @@map("users")
 }
@@ -169,67 +271,240 @@ model Supplier {
 }
 
 model BusinessProfile {
-  id                    Int                @id @default(autoincrement())
-  ownerUserId           Int                @unique
-  owner                 User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  name                  String
-  kind                  BusinessKind       @default(FIJO)
-  category              String
-  description           String?            @db.Text
-  locality              String
-  address               String?
-  contactPhone          String?
-  contactEmail          String?
-  notificationsEnabled  Boolean            @default(true)
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime           @updatedAt
-  applications          EventApplication[]
-  sales                 Sale[]
-  cashMovements         CashMovement[]
+  id                   Int                @id @default(autoincrement())
+  ownerUserId          Int                @unique
+  owner                User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  name                 String
+  kind                 BusinessKind       @default(FIJO)
+  category             String
+  description          String?            @db.Text
+  locality             String
+  address              String?
+  contactPhone         String?
+  contactEmail         String?
+  notificationsEnabled Boolean            @default(true)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  applications         EventApplication[]
+  sales                Sale[]
+  cashMovements        CashMovement[]
+  photos               BusinessPhoto[]
+  products             BusinessProduct[]
+  orders               BusinessOrder[]
+
+  cashDays BusinessCashDay[]
+  expenses BusinessExpense[]
 
   @@map("business_profiles")
 }
 
+// Archivo subido (fotos y documentos). Se guarda en la base porque el disco de Render no es persistente.
+model Upload {
+  id            Int              @id @default(autoincrement())
+  key           String           @unique
+  ownerUserId   Int
+  owner         User             @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  purpose       UploadPurpose
+  isPublic      Boolean          @default(false)
+  mimeType      String
+  size          Int
+  sha256        String
+  originalName  String
+  data          Bytes            @db.LongBlob
+  createdAt     DateTime         @default(now())
+  spaceDocument SpaceDocument?
+  businessPhoto BusinessPhoto?
+  productPhoto  BusinessProduct?
+
+  spaceCover     Space?            @relation("SpaceCover")
+  paymentReceipt EventApplication? @relation("PaymentReceipt")
+
+  @@index([ownerUserId, purpose])
+  @@map("uploads")
+}
+
+model Space {
+  id                    Int             @id @default(autoincrement())
+  ownerUserId           Int
+  owner                 User            @relation("SpaceOwner", fields: [ownerUserId], references: [id], onDelete: Cascade)
+  name                  String
+  type                  SpaceType
+  description           String?         @db.Text
+  locality              String
+  address               String
+  latitude              Float
+  longitude             Float
+  capacity              Int?
+  holderName            String
+  holderTaxId           String
+  tenure                SpaceTenure
+  contactPhone          String
+  declarationAcceptedAt DateTime
+  declarationIp         String?
+  status                SpaceStatus     @default(PENDIENTE)
+  reviewNotes           String?         @db.Text
+  reviewedAt            DateTime?
+  reviewedByUserId      Int?
+  reviewedBy            User?           @relation("SpaceReviewer", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  coverUploadId         Int?            @unique
+  cover                 Upload?         @relation("SpaceCover", fields: [coverUploadId], references: [id], onDelete: SetNull)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  documents             SpaceDocument[]
+  events                MarketEvent[]
+
+  @@index([ownerUserId, status])
+  @@index([status])
+  @@map("spaces")
+}
+
+model SpaceDocument {
+  id        Int               @id @default(autoincrement())
+  spaceId   Int
+  space     Space             @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  uploadId  Int               @unique
+  upload    Upload            @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  kind      SpaceDocumentKind
+  createdAt DateTime          @default(now())
+
+  @@map("space_documents")
+}
+
+model BusinessPhoto {
+  id         Int             @id @default(autoincrement())
+  businessId Int
+  business   BusinessProfile @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  uploadId   Int             @unique
+  upload     Upload          @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  position   Int             @default(0)
+  createdAt  DateTime        @default(now())
+
+  @@index([businessId, position])
+  @@map("business_photos")
+}
+
+// Catálogo propio de cada emprendimiento (independiente del catálogo del comercio)
+model BusinessProduct {
+  id            Int                 @id @default(autoincrement())
+  businessId    Int
+  business      BusinessProfile     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?             @db.Text
+  price         Decimal             @db.Decimal(12, 2)
+  stock         Int?
+  active        Boolean             @default(true)
+  photoUploadId Int?                @unique
+  photo         Upload?             @relation(fields: [photoUploadId], references: [id], onDelete: SetNull)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  orderItems    BusinessOrderItem[]
+
+  @@index([businessId, active])
+  @@map("business_products")
+}
+
+model BusinessOrder {
+  id              Int                 @id @default(autoincrement())
+  businessId      Int
+  business        BusinessProfile     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customerName    String
+  customerContact String?
+  channel         String              @default("PRESENCIAL")
+  status          OrderStatus         @default(PENDIENTE)
+  paymentMethod   String?
+  total           Decimal             @db.Decimal(12, 2)
+  notes           String?             @db.Text
+  eventId         Int?
+  event           MarketEvent?        @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  deliveredAt     DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  items           BusinessOrderItem[]
+
+  @@index([businessId, status, createdAt])
+  @@map("business_orders")
+}
+
+model BusinessOrderItem {
+  id          Int              @id @default(autoincrement())
+  orderId     Int
+  order       BusinessOrder    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   Int?
+  product     BusinessProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName String
+  quantity    Int
+  unitPrice   Decimal          @db.Decimal(12, 2)
+  subtotal    Decimal          @db.Decimal(12, 2)
+
+  @@map("business_order_items")
+}
+
 model MarketEvent {
-  id                 Int                @id @default(autoincrement())
-  organizerUserId    Int
-  organizer          User               @relation("EventOrganizer", fields: [organizerUserId], references: [id])
-  name               String
-  locality           String
-  address            String?
-  latitude           Float?
-  longitude          Float?
-  startsAt           DateTime
-  endsAt             DateTime
+  id                  Int                @id @default(autoincrement())
+  organizerUserId     Int
+  organizer           User               @relation("EventOrganizer", fields: [organizerUserId], references: [id])
+  spaceId             Int?
+  space               Space?             @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  standFee            Decimal?           @db.Decimal(12, 2)
+  approvalMessage     String?            @db.Text
+  rejectionMessage    String?            @db.Text
+  standPlan           Json?
+  name                String
+  locality            String
+  address             String?
+  latitude            Float?
+  longitude           Float?
+  startsAt            DateTime
+  endsAt              DateTime
   applicationDeadline DateTime
-  description        String             @db.Text
-  acceptedCategories String?            @db.Text
-  requirements       String?            @db.Text
-  capacity           Int?
-  status             OpportunityStatus  @default(BORRADOR)
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  applications       EventApplication[]
-  sales              Sale[]
-  cashMovements      CashMovement[]
+  description         String             @db.Text
+  acceptedCategories  String?            @db.Text
+  requirements        String?            @db.Text
+  capacity            Int?
+  status              OpportunityStatus  @default(BORRADOR)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  applications        EventApplication[]
+  sales               Sale[]
+  cashMovements       CashMovement[]
+  orders              BusinessOrder[]
+
+  cashDays BusinessCashDay[]
+  expenses BusinessExpense[]
 
   @@index([status, locality, startsAt])
   @@map("market_events")
 }
 
 model EventApplication {
-  id                Int               @id @default(autoincrement())
-  eventId           Int
-  event             MarketEvent       @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  businessId        Int
-  business          BusinessProfile   @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  applicantUserId   Int
-  applicant         User              @relation("Applicant", fields: [applicantUserId], references: [id], onDelete: Cascade)
-  offeredProduct    String
-  additionalInfo    String?           @db.Text
-  status            ApplicationStatus @default(BORRADOR)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  id                     Int                  @id @default(autoincrement())
+  eventId                Int
+  event                  MarketEvent          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  businessId             Int
+  business               BusinessProfile      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  applicantUserId        Int
+  applicant              User                 @relation("Applicant", fields: [applicantUserId], references: [id], onDelete: Cascade)
+  offeredProduct         String
+  additionalInfo         String?              @db.Text
+  status                 ApplicationStatus    @default(BORRADOR)
+  reviewNotes            String?              @db.Text
+  standLabel             String?
+  setupTime              String?
+  waitlistedAt           DateTime?
+  reminderSentAt         DateTime?
+  attendedAt             DateTime?
+  paymentStatus          PaymentStatus        @default(NO_APLICA)
+  paymentMethod          String?
+  paymentReference       String?
+  paymentNotes           String?              @db.Text
+  paymentReceiptUploadId Int?                 @unique
+  paymentReceipt         Upload?              @relation("PaymentReceipt", fields: [paymentReceiptUploadId], references: [id], onDelete: SetNull)
+  paymentInformedAt      DateTime?
+  paymentConfirmedAt     DateTime?
+  messages               ApplicationMessage[]
+  reviews                Review[]
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
 
   @@unique([eventId, businessId])
   @@index([applicantUserId, status])
@@ -267,38 +542,38 @@ model PurchaseDetail {
 }
 
 model Sale {
-  id                Int          @id @default(autoincrement())
-  saleNumber        String       @unique
-  total             Decimal      @db.Decimal(12, 2)
-  discount          Decimal      @default(0) @db.Decimal(12, 2)
+  id                Int              @id @default(autoincrement())
+  saleNumber        String           @unique
+  total             Decimal          @db.Decimal(12, 2)
+  discount          Decimal          @default(0) @db.Decimal(12, 2)
   paymentMethod     String
-  status            SaleStatus   @default(COMPLETADA)
-  cancelReason      String?      @db.Text
+  status            SaleStatus       @default(COMPLETADA)
+  cancelReason      String?          @db.Text
   cancelledAt       DateTime?
   cancelledByUserId Int?
-  cancelledByUser   User?        @relation("CancelledSales", fields: [cancelledByUserId], references: [id])
+  cancelledByUser   User?            @relation("CancelledSales", fields: [cancelledByUserId], references: [id])
   userId            Int
-  user              User         @relation(fields: [userId], references: [id])
-  createdAt         DateTime     @default(now())
+  user              User             @relation(fields: [userId], references: [id])
+  createdAt         DateTime         @default(now())
   details           SaleDetail[]
   eventId           Int?
   event             MarketEvent?     @relation(fields: [eventId], references: [id], onDelete: SetNull)
   businessId        Int?
-  business           BusinessProfile? @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  business          BusinessProfile? @relation(fields: [businessId], references: [id], onDelete: SetNull)
 
   @@map("sales")
 }
 
 model SaleDetail {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   saleId    Int
-  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
   quantity  Int
-  unitPrice Decimal  @db.Decimal(12, 2)
-  unitCost  Decimal  @db.Decimal(12, 2)
-  subtotal  Decimal  @db.Decimal(12, 2)
+  unitPrice Decimal @db.Decimal(12, 2)
+  unitCost  Decimal @db.Decimal(12, 2)
+  subtotal  Decimal @db.Decimal(12, 2)
 
   @@map("sale_details")
 }
@@ -346,6 +621,7 @@ model Notification {
   type        String
   title       String
   description String   @db.Text
+  link        String?  @db.VarChar(255)
   read        Boolean  @default(false)
   createdAt   DateTime @default(now())
   userId      Int?
@@ -377,4 +653,98 @@ model PaymentMethod {
   createdAt DateTime @default(now())
 
   @@map("payment_methods")
+}
+
+// Conversación entre emprendedor y organizador dentro de una postulación
+model ApplicationMessage {
+  id            Int              @id @default(autoincrement())
+  applicationId Int
+  application   EventApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  senderUserId  Int
+  sender        User             @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
+  kind          MessageKind      @default(USUARIO)
+  body          String           @db.Text
+  readAt        DateTime?
+  createdAt     DateTime         @default(now())
+
+  @@index([applicationId, createdAt])
+  @@map("application_messages")
+}
+
+// Calificación después de la feria, en los dos sentidos
+model Review {
+  id            Int              @id @default(autoincrement())
+  applicationId Int
+  application   EventApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  direction     ReviewDirection
+  authorUserId  Int
+  author        User             @relation("ReviewAuthor", fields: [authorUserId], references: [id], onDelete: Cascade)
+  targetUserId  Int
+  target        User             @relation("ReviewTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+  rating        Int
+  comment       String?          @db.Text
+  createdAt     DateTime         @default(now())
+
+  @@unique([applicationId, direction])
+  @@index([targetUserId, direction])
+  @@map("reviews")
+}
+
+// Caja del día del emprendimiento: apertura, ventas, gastos y cierre con arqueo
+model BusinessCashDay {
+  id           Int               @id @default(autoincrement())
+  businessId   Int
+  business     BusinessProfile   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  eventId      Int?
+  event        MarketEvent?      @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  status       CashDayStatus     @default(ABIERTA)
+  openingCash  Decimal           @db.Decimal(12, 2)
+  countedCash  Decimal?          @db.Decimal(12, 2)
+  expectedCash Decimal?          @db.Decimal(12, 2)
+  notes        String?           @db.Text
+  openedAt     DateTime          @default(now())
+  closedAt     DateTime?
+  expenses     BusinessExpense[]
+
+  @@index([businessId, status])
+  @@index([businessId, openedAt])
+  @@map("business_cash_days")
+}
+
+model BusinessExpense {
+  id         Int              @id @default(autoincrement())
+  businessId Int
+  business   BusinessProfile  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  cashDayId  Int?
+  cashDay    BusinessCashDay? @relation(fields: [cashDayId], references: [id], onDelete: SetNull)
+  eventId    Int?
+  event      MarketEvent?     @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  concept    String
+  amount     Decimal          @db.Decimal(12, 2)
+  method     String           @default("EFECTIVO")
+  createdAt  DateTime         @default(now())
+
+  @@index([businessId, createdAt])
+  @@map("business_expenses")
+}
+
+// Denuncias de usuarios para que la administración de la plataforma modere
+model Report {
+  id               Int          @id @default(autoincrement())
+  reporterUserId   Int
+  reporter         User         @relation("ReportAuthor", fields: [reporterUserId], references: [id], onDelete: Cascade)
+  targetType       ReportTarget
+  targetId         Int
+  reason           String
+  details          String?      @db.Text
+  status           ReportStatus @default(ABIERTA)
+  resolutionNotes  String?      @db.Text
+  resolvedByUserId Int?
+  resolvedBy       User?        @relation("ReportResolver", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+  resolvedAt       DateTime?
+  createdAt        DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("reports")
 }

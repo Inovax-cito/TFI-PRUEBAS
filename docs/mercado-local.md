@@ -21,12 +21,13 @@ No se insertaron eventos ni perfiles de ejemplo en la base configurada. Se puede
 
 ## Mapa y datos
 
-El mapa usa Leaflet y teselas de OpenStreetMap. La ubicación se carga manualmente mediante localidad, dirección y coordenadas opcionales; no se incorporó geocodificación. Si faltan coordenadas, la convocatoria sigue disponible en el listado. El mapa requiere conexión para descargar sus teselas.
+El mapa usa Google Maps cuando el backend tiene `GOOGLE_MAPS_API_KEY`; si no, usa Leaflet con OpenStreetMap. Los organizadores marcan la ubicación de su espacio en el mapa (con búsqueda de dirección cuando Google está configurado) y cada convocatoria toma la ubicación de su espacio verificado. El enlace "Cómo llegar" abre Google Maps sin necesitar clave.
 
 ## Alcance y límites actuales
 
-- El catálogo y el stock del sistema anterior son globales y de un único comercio. Las ventas del evento reutilizan esos productos y descuentan el inventario compartido. No usar como operación multi-negocio real hasta separar productos, stock y movimientos por negocio.
+- Roles y circuito de verificación de espacios: ver `docs/analisis-plataforma.md`.
+- El catálogo y el stock del comercio siguen siendo globales. El portal ya no los usa: cada emprendimiento tiene sus propios productos, pedidos y ventas.
 - Los movimientos de eventos quedan vinculados al evento y al negocio, y se excluyen de los reportes operativos generales del comercio.
-- Las cuentas nuevas tienen rol `EMPRENDEDOR`. No se crea por registro una cuenta administradora.
-- Las notificaciones son internas. No hay pagos, suscripciones, correo, integración municipal ni datos oficiales cargados.
+- Al registrarse se elige `EMPRENDEDOR` u `ORGANIZADOR`. `ADMINISTRADOR` y `EMPLEADO` solo los asigna la administración.
+- Las notificaciones son internas. No hay pagos, correo ni integración municipal; el costo del puesto es informativo.
 - La lista de localidades inicial responde al alcance de la demostración: Banda del Río Salí, Cruz Alta y Alderetes.

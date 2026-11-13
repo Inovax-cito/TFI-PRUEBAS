@@ -17,3 +17,9 @@ services:
         generateValue: true
       - key: DATABASE_URL
         sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: GOOGLE_MAPS_MAP_ID
+        sync: false

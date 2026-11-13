@@ -72,7 +72,10 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{
       user, businessConfig, token, loading, unreadNotifications,
-      isAdmin: user?.role === 'ADMINISTRADOR', login, logout,
+      isAdmin: user?.role === 'ADMINISTRADOR',
+      isOrganizer: user?.role === 'ORGANIZADOR',
+      isEntrepreneur: user?.role === 'EMPRENDEDOR',
+      login, logout,
       updateCurrentUser, updateBusinessConfig, fetchUnreadCount,
     }}>
       {children}
