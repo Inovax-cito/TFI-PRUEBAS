@@ -1,0 +1,26 @@
+# Render (plan gratis) duerme el servidor tras 15 minutos sin visitas y la primera
+# visita tarda ~1 minuto en despertarlo. Este "bot" lo visita cada 10 minutos:
+# /api/health responde desde el backend y hace una consulta a la base de datos,
+# así quedan despiertos los dos. También se puede ejecutar a mano desde Actions.
+name: Mantener Emprende despierto
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Visitar /api/health (hasta 3 intentos)
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 https://emprende-mya5.onrender.com/api/health || true)
+            if [ "$code" = "200" ]; then echo "Emprende despierto (HTTP $code)"; exit 0; fi
+            echo "Intento $i: HTTP $code. Reintento en 20 s..."
+            sleep 20
+          done
+          echo "Emprende no respondió."
+          exit 1
