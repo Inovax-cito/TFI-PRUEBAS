@@ -1,7 +1,5 @@
-import jwt from 'jsonwebtoken';
 import prisma from '../config/db.js';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'sistema_autogestion_jwt_secret_key_pro_2026';
+import { verifySessionToken } from '../config/security.js';
 
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -12,7 +10,7 @@ export const authenticateToken = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = verifySessionToken(token);
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: {
@@ -23,6 +21,7 @@ export const authenticateToken = async (req, res, next) => {
         email: true,
         role: true,
         status: true,
+        onboardingCompleted: true,
       },
     });
 
@@ -37,7 +36,7 @@ export const authenticateToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Token inválido o expirado.', error: error.message });
+    return res.status(403).json({ message: 'Token inválido o expirado.' });
   }
 };
 
@@ -53,6 +52,21 @@ export const requireAdmin = (req, res, next) => {
 export const requireStaff = (req, res, next) => {
   if (!req.user || !['ADMINISTRADOR', 'EMPLEADO'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Esta función está disponible para el personal del comercio.' });
+  }
+  next();
+};
+
+// Administración de espacios: organizadores (sobre lo propio) y la administración de la plataforma.
+export const requireOrganizer = (req, res, next) => {
+  if (!req.user || !['ORGANIZADOR', 'ADMINISTRADOR'].includes(req.user.role)) {
+    return res.status(403).json({ message: 'Esta función está disponible para quienes administran espacios.' });
+  }
+  next();
+};
+
+export const requireEntrepreneur = (req, res, next) => {
+  if (!req.user || !['EMPRENDEDOR', 'ADMINISTRADOR'].includes(req.user.role)) {
+    return res.status(403).json({ message: 'Esta función está disponible para cuentas de emprendedor.' });
   }
   next();
 };

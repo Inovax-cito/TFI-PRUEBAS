@@ -167,6 +167,7 @@ export const createAdjustment = async (req, res) => {
         await tx.notification.create({
           data: {
             type: 'STOCK_BAJO',
+            link: '#tab:inventory',
             title: `Alerta por ajuste: Stock bajo en ${product.name}`,
             description: `El stock se ajustó a ${resultStock} unidades (mínimo: ${product.minStock}).`,
           },

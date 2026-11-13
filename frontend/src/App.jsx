@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from './context/AuthContext.jsx';
 import { Sidebar } from './components/Sidebar.jsx';
 import { Navbar } from './components/Navbar.jsx';
@@ -15,6 +15,7 @@ import { ReportsPage } from './pages/ReportsPage.jsx';
 import { UsersPage } from './pages/UsersPage.jsx';
 import { ConfigPage } from './pages/ConfigPage.jsx';
 import { EntrepreneurPortal, MarketplacePage } from './pages/MarketplacePage.jsx';
+import { OnboardingPage } from './pages/OnboardingPage.jsx';
 
 export function AppContent() {
   const { user, loading, isAdmin } = useAuth();
@@ -22,6 +23,17 @@ export function AppContent() {
   const [activeTab, setActiveTab] = useState('portal');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => { if (user?.role === 'EMPLEADO') setActiveTab((current) => (current === 'portal' ? 'dashboard' : current)); }, [user?.role]);
+
+  // Los avisos pueden llevar a una pestaña del panel comercial o a una pantalla del portal.
+  useEffect(() => {
+    const toTab = (event) => setActiveTab(event.detail);
+    const toPortal = () => setActiveTab((current) => (['portal', 'business', 'events', 'applications', 'market-admin', 'verify-spaces'].includes(current) ? current : 'portal'));
+    window.addEventListener('app:tab', toTab);
+    window.addEventListener('app:path', toPortal);
+    return () => { window.removeEventListener('app:tab', toTab); window.removeEventListener('app:path', toPortal); };
+  }, []);
 
   if (loading) {
     return (
@@ -35,9 +47,11 @@ export function AppContent() {
   }
 
   if (!user) return <LoginPage />;
+  // Cuenta nueva de Google: primero elige si es emprendedor o administra espacios.
+  if (user.onboardingCompleted === false) return <OnboardingPage />;
 
-  const marketplaceSections = { portal: 'home', business: 'business', events: 'events', applications: 'applications', 'market-admin': 'admin' };
-  if (user.role === 'EMPRENDEDOR' || marketplaceSections[activeTab]) {
+  const marketplaceSections = { portal: 'home', business: 'business', events: 'events', applications: 'applications', 'market-admin': 'admin', 'verify-spaces': 'verify' };
+  if (['EMPRENDEDOR', 'ORGANIZADOR'].includes(user.role) || marketplaceSections[activeTab]) {
     return <EntrepreneurPortal initialSection={marketplaceSections[activeTab] || 'home'} onOpenBackoffice={() => setActiveTab('dashboard')} />;
   }
 

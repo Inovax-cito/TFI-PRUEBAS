@@ -1,15 +1,20 @@
 import prisma from '../config/db.js';
 
+// Los avisos sin destinatario son del comercio (stock, caja, compras): solo los ve el personal.
+const scope = (user) => (user.role === 'EMPLEADO'
+  ? { OR: [{ userId: user.id }, { userId: null }] }
+  : { userId: user.id });
+
 export const getNotifications = async (req, res) => {
   try {
     const notifications = await prisma.notification.findMany({
-      where: { OR: [{ userId: req.user.id }, { userId: null }] },
+      where: scope(req.user),
       orderBy: { createdAt: 'desc' },
-      take: 20,
+      take: 30,
     });
 
     const unreadCount = await prisma.notification.count({
-      where: { read: false, OR: [{ userId: req.user.id }, { userId: null }] },
+      where: { read: false, ...scope(req.user) },
     });
 
     res.json({ notifications, unreadCount });
@@ -24,7 +29,7 @@ export const markAsRead = async (req, res) => {
     const notifId = parseInt(id, 10);
 
     const updated = await prisma.notification.updateMany({
-      where: { id: notifId, OR: [{ userId: req.user.id }, { userId: null }] },
+      where: { id: notifId, ...scope(req.user) },
       data: { read: true },
     });
     if (!updated.count) return res.status(404).json({ message: 'Notificación no encontrada.' });
@@ -38,7 +43,7 @@ export const markAsRead = async (req, res) => {
 export const markAllAsRead = async (req, res) => {
   try {
     await prisma.notification.updateMany({
-      where: { read: false, OR: [{ userId: req.user.id }, { userId: null }] },
+      where: { read: false, ...scope(req.user) },
       data: { read: true },
     });
 

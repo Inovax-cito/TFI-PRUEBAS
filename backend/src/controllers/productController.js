@@ -180,6 +180,7 @@ export const createProduct = async (req, res) => {
         await tx.notification.create({
           data: {
             type: 'STOCK_BAJO',
+            link: '#tab:inventory',
             title: `Stock bajo en nuevo producto: ${product.name}`,
             description: `Se dio de alta con ${stock} unidades (mínimo: ${min}).`,
           },

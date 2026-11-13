@@ -262,6 +262,7 @@ export const createSale = async (req, res) => {
           await tx.notification.create({
             data: {
               type: 'STOCK_BAJO',
+              link: '#tab:inventory',
               title: `Alerta de Stock Bajo: ${item.productName}`,
               description: `Stock remanente: ${newStock} unidades tras la venta ${saleNumber} (mínimo: ${item.minStock}).`,
             },
@@ -398,6 +399,7 @@ export const cancelSale = async (req, res) => {
       await tx.notification.create({
         data: {
           type: 'OPERACION_IMPORTANTE',
+          link: '#tab:sales',
           title: `Venta anulada: ${sale.saleNumber}`,
           description: `El usuario ${req.user.name} ${req.user.lastName} canceló la venta ${sale.saleNumber} por un total de $${sale.total}.`,
         },

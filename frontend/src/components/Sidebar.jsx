@@ -34,10 +34,11 @@ export const Sidebar = ({
 
   const navItems = [
     { id: 'portal', label: 'Inicio', icon: LayoutDashboard, adminOnly: false, section: 'portal' },
-    { id: 'business', label: 'Mi negocio', icon: BriefcaseBusiness, adminOnly: false, section: 'portal' },
+    { id: 'business', label: 'Mi emprendimiento', icon: BriefcaseBusiness, adminOnly: false, section: 'portal' },
     { id: 'events', label: 'Ferias y eventos', icon: Compass, adminOnly: false, section: 'portal' },
     { id: 'applications', label: 'Mis solicitudes', icon: TicketCheck, adminOnly: false, section: 'portal' },
     { id: 'market-admin', label: 'Administrar ferias', icon: ClipboardList, adminOnly: true, section: 'portal' },
+    { id: 'verify-spaces', label: 'Verificar espacios', icon: ClipboardList, adminOnly: true, section: 'portal' },
     { id: 'dashboard', label: 'Panel comercial', icon: BarChart3, adminOnly: false, staffOnly: true, section: 'shop' },
     { id: 'sales', label: 'Ventas', icon: ShoppingCart, adminOnly: false, staffOnly: true, section: 'shop' },
     { id: 'products', label: 'Productos', icon: Package, adminOnly: false, staffOnly: true, section: 'shop' },

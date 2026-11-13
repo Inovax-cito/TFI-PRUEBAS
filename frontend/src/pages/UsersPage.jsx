@@ -187,6 +187,8 @@ export const UsersPage = () => {
               <option value="">Todos los Roles</option>
               <option value="ADMINISTRADOR">Administrador</option>
               <option value="EMPLEADO">Empleado</option>
+              <option value="ORGANIZADOR">Organizador de espacios</option>
+              <option value="EMPRENDEDOR">Emprendedor</option>
             </select>
             <button className="btn btn-secondary btn-icon" onClick={fetchUsers} title="Recargar">
               <RefreshCw size={16} />
@@ -381,6 +383,8 @@ export const UsersPage = () => {
                   >
                     <option value="EMPLEADO">Empleado (Ventas, consulta de stock y caja autorizada)</option>
                     <option value="ADMINISTRADOR">Administrador (Acceso total, compras, usuarios y configuración)</option>
+                    <option value="ORGANIZADOR">Organizador de espacios (publica convocatorias en espacios verificados)</option>
+                    <option value="EMPRENDEDOR">Emprendedor (perfil, postulaciones, pedidos y ventas propias)</option>
                   </select>
                 </div>
               </div>
